@@ -1129,6 +1129,11 @@
     path-to-regexp "8.4.2"
     tslib "2.8.1"
 
+"@nestjs/mapped-types@*":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/mapped-types/-/mapped-types-2.1.1.tgz#9530ac3250ab433ba6ef831e9dd5d483f5fc8144"
+  integrity sha512-SCCoMEJ6jdeI5h/N+KCVF1+pmg/hmEkNA5nHTS8Gvww7T/LCl4o1gFLinw2iQ60w7slFkszHcGLKGdazVI4F8A==
+
 "@nestjs/platform-express@^11.0.1":
   version "11.1.28"
   resolved "https://registry.yarnpkg.com/@nestjs/platform-express/-/platform-express-11.1.28.tgz#d90edd6329d8a23a33e851727b876a52e3bd53c3"
@@ -2472,6 +2477,11 @@ drizzle-orm@^1.0.0-rc.4:
   version "1.0.0-rc.4"
   resolved "https://registry.yarnpkg.com/drizzle-orm/-/drizzle-orm-1.0.0-rc.4.tgz#30335073cc2bc9c6cffb5dcc153fe0b1225325d7"
   integrity sha512-BT+pf+qoiYHqltoA88Jmf6ilGMXPlpfE0hEJKc2adRtMCAl25Swk/t5gXcWxZNAwdtf3F5gCd2FpeOyP/pT0Hw==
+
+drizzle-zod@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/drizzle-zod/-/drizzle-zod-0.8.3.tgz#8c61aba8216195c7670ea5038b4f38c6ebc3868f"
+  integrity sha512-66yVOuvGhKJnTdiqj1/Xaaz9/qzOdRJADpDa68enqS6g3t0kpNkwNYjUuaeXgZfO/UWuIM9HIhSlJ6C5ZraMww==
 
 dunder-proto@^1.0.1:
   version "1.0.1"
@@ -4047,6 +4057,13 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+nestjs-zod@^5.5.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/nestjs-zod/-/nestjs-zod-5.5.0.tgz#bc5ed2397536ad98cae44dcbd43b7aa7111ee21a"
+  integrity sha512-V0WMtmICygYE2RoMKk8ExEeoetkC7PoUmUlZNP4JNk1YgrnUnG1vgkRn2DBNqsDi+Obv3c9AOssmXe/k/AvBOg==
+  dependencies:
+    deepmerge "^4.3.1"
+
 node-abort-controller@^3.0.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/node-abort-controller/-/node-abort-controller-3.1.1.tgz#a94377e964a9a37ac3976d848cb5c765833b8548"
@@ -5237,3 +5254,8 @@ yoctocolors-cjs@^2.1.3:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/yoctocolors-cjs/-/yoctocolors-cjs-2.1.3.tgz#7e4964ea8ec422b7a40ac917d3a344cfd2304baa"
   integrity sha512-U/PBtDf35ff0D8X8D0jfdzHYEPFxAI7jJlxZXwCSez5M3190m+QobIfh+sWDWSHMCWWJN2AWamkegn6vr6YBTw==
+
+zod@^4.4.3:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-4.4.3.tgz#b680f172885d18bbebf21a834ea25e55a1bbf356"
+  integrity sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==
