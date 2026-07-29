@@ -10,9 +10,9 @@ import { MedicationBatchesModule } from "./medication-batches/medication-batches
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ".env",
-    })
-    DatabaseModule, 
-    MedicationBatchesModule
+    }),
+    DatabaseModule,
+    MedicationBatchesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

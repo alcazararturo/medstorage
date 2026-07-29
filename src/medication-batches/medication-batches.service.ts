@@ -1,7 +1,7 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
 import { eq } from 'drizzle-orm';
-import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
-import { DrizzleClient } from "../../server/db/database.module";
+import { DRIZZLE_PROVIDER, DrizzleClient } from "../../server/db/database.module";
+import { medicationBatches } from "../../server/db/schema";
 import { CreateMedicationBatchDto } from "./dto/create-medication-batch.dto";
 import { UpdateMedicationBatchDto } from "./dto/update-medication-batch.dto";
 
@@ -15,9 +15,8 @@ export class MedicationBatchesService {
     const [newBatch] = await this.db
       .insert(medicationBatches)
       .values({
-        ...createDto,
-        // Drizzle necesita guardar el decimal como string en Postgres
-        quantity: createDto.quantity.toString(), 
+        ...createMedicationBatchDto,        
+        quantity: createMedicationBatchDto.quantity.toString(), 
       })
       .returning();
     return newBatch;
@@ -25,15 +24,16 @@ export class MedicationBatchesService {
 
   async findAll() {
     const [findBatch] = await this.db
-    .select().from(medicationBatches).orderBy(medicationBatches.expirationDate)
-    .returning();
+    .select().from(medicationBatches).orderBy(medicationBatches.expirationDate);
     return findBatch;
   }
 
   async findOne(id: string) {
     const [findOneBatch] = await this.db
-    .select().from(medicationBatches).where(eq(medicationBatches.id, id))
-    .returning();
+    .select().from(medicationBatches).where(eq(medicationBatches.id, id));
+    if (!findOneBatch) {
+      throw new NotFoundException(`No existe el lote de medicamento con id ${id}`,); 
+    }
     return findOneBatch;
   }
 
@@ -41,18 +41,24 @@ export class MedicationBatchesService {
     const [updatedBatch] = await this.db
       .update(medicationBatches)
       .set({
-        ...updateDto,
-        quantity: updateDto.quantity ? updateDto.quantity.toString() : undefined,
+        ...updateMedicationBatchDto,
+        quantity: updateMedicationBatchDto.quantity ? updateMedicationBatchDto.quantity.toString() : undefined,
       })
       .where(eq(medicationBatches.id, id))
       .returning();
+      if (!updatedBatch) {
+        throw new NotFoundException(`No existe el lote de medicamento con id ${id}`,);
+      }
     return updatedBatch;
   }
 
-  remove(id: string) {
-    const [removeBatch] = await db.delete(medicationBatches)
+  async remove(id: string) {
+    const [removeBatch] = await this.db.delete(medicationBatches)
     .where(eq(medicationBatches.id, id))
     .returning();
+    if (!removeBatch) {
+      `No existe el lote de medicamento con id ${id}`,
+    }
     return removeBatch;
   }
 }
