@@ -15,10 +15,16 @@ const RefinedBatchSchema = BaseInsertBatchSchema.extend({
   // Forzamos a que las fechas se envíen en formato texto ISO (YYYY-MM-DD)
   expirationDate: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Debe ser formato YYYY-MM-DD"),
+    .regex(
+      /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
+      "Debe ser formato YYYY-MM-DD",
+    ),
   openedAt: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Debe ser formato YYYY-MM-DD")
+    .regex(
+      /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
+      "Debe ser formato YYYY-MM-DD",
+    )
     .optional()
     .nullable(),
 });

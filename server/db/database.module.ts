@@ -1,19 +1,24 @@
 import { Module, Global } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import * as schema from "../server/db/schema"; // Ruta hacia tu schema.ts
+import * as schema from "./schema"; // Ruta hacia tu schema.ts
 
 // Definimos un token único para la inyección de dependencias
 export const DRIZZLE_PROVIDER = "DRIZZLE_PROVIDER";
+// Inferimos el tipo exacto del cliente Drizzle con tu schema
+export type DrizzleClient = ReturnType<typeof drizzle<typeof schema>>;
 
 @Global() // Hace que el módulo esté disponible en toda la aplicación sin re-importarlo
 @Module({
   providers: [
     {
       provide: DRIZZLE_PROVIDER,
-      useFactory: () => {
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const databaseUrl = configService.getOrThrow<string>("DATABASE_URL");
         // Inicializamos el cliente HTTP nativo de Neon
-        const sql = neon(process.env.DATABASE_URL!);
+        const sql = neon(databaseUrl);
 
         // Pasamos el cliente y el schema a Drizzle
         return drizzle(sql, { schema });
