@@ -15,10 +15,11 @@ export class MedicationBatchesService {
     const [newBatch] = await this.db
       .insert(medicationBatches)
       .values({
-        ...createMedicationBatchDto,        
-        createMedicationBatchDto.quantity !== undefined
-        ? createMedicationBatchDto.quantity.toString()
-        : undefined,
+        ...createMedicationBatchDto,
+        quantity:        
+          createMedicationBatchDto.quantity !== undefined 
+          ? createMedicationBatchDto.quantity.toString()
+          : undefined,
       })
       .returning();
     return newBatch;
@@ -45,9 +46,10 @@ export class MedicationBatchesService {
       .update(medicationBatches)
       .set({
         ...updateMedicationBatchDto,
-        updateMedicationBatchDto.quantity !== undefined
-        ? updateMedicationBatchDto.quantity.toString()
-        : undefined,
+        quantity:
+           updateMedicationBatchDto.quantity !== undefined
+           ? updateMedicationBatchDto.quantity.toString()
+           : undefined,
       })
       .where(eq(medicationBatches.id, id))
       .returning();

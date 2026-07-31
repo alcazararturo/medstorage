@@ -56,7 +56,8 @@ export class StorageLocationsService {
     .where(eq(storageLocations.id, id))
     .returning();
     if (!removeStorageLocations) {
-      `No existe el storageLocations con id ${id}`,
+      throw new NotFoundException(
+        `No existe el storageLocations con id ${id}`, );
     }
     return removeStorageLocations;
   }
