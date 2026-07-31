@@ -1,13 +1,15 @@
 import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
-import {
-  DRIZZLE_PROVIDER,
-  DrizzleClient,
-} from "../../server/db/database.module";
+import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
+import type { DrizzleClient } from "../../server/db/database.module";
 import { medicationActiveIngredients } from "../../server/db/schema";
+import type { InferInsertModel } from "drizzle-orm";
 import { CreateMedActiveIngredientDto } from "./dto/create-med-active-ingredient.dto";
 import { UpdateMedActiveIngredientDto } from "./dto/update-med-active-ingredient.dto";
+
+type MedicationActiveIngredientsInsert = InferInsertModel<
+  typeof medicationActiveIngredients
+>;
 
 @Injectable()
 export class MedActiveIngredientsService {
@@ -18,9 +20,9 @@ export class MedActiveIngredientsService {
   async create(createMedActiveIngredientDto: CreateMedActiveIngredientDto) {
     const [newMedicationActiveIngredients] = await this.db
       .insert(medicationActiveIngredients)
-      .values({
-        ...createMedActiveIngredientDto,
-      })
+      .values(
+        createMedActiveIngredientDto as unknown as MedicationActiveIngredientsInsert,
+      )
       .returning();
     return newMedicationActiveIngredients;
   }
@@ -54,9 +56,9 @@ export class MedActiveIngredientsService {
   ) {
     const [updatedMedicationActiveIngredients] = await this.db
       .update(medicationActiveIngredients)
-      .set({
-        ...updateMedActiveIngredientDto,
-      })
+      .set(
+        updateMedActiveIngredientDto as unknown as Partial<MedicationActiveIngredientsInsert>,
+      ) // cast
       .where(eq(medicationActiveIngredients.id, id))
       .returning();
     if (!updatedMedicationActiveIngredients) {

@@ -1,13 +1,13 @@
 import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
-import {
-  DRIZZLE_PROVIDER,
-  DrizzleClient,
-} from "../../server/db/database.module.ts";
+import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
+import type { DrizzleClient } from "../../server/db/database.module";
 import { allergies } from "../../server/db/schema";
+import type { InferInsertModel } from "drizzle-orm";
 import { CreateAllergyDto } from "./dto/create-allergy.dto";
 import { UpdateAllergyDto } from "./dto/update-allergy.dto";
+
+type AllergyInsert = InferInsertModel<typeof allergies>;
 
 @Injectable()
 export class AllergiesService {
@@ -19,9 +19,7 @@ export class AllergiesService {
   async create(createAllergyDto: CreateAllergyDto) {
     const [newAllergy] = await this.db
       .insert(allergies)
-      .values({
-        ...createAllergyDto,
-      })
+      .values(createAllergyDto as unknown as AllergyInsert)
       .returning();
     return newAllergy;
   }
@@ -39,7 +37,7 @@ export class AllergiesService {
       .from(allergies)
       .where(eq(allergies.id, id));
     if (!findOneAllergy) {
-      throw new NotFoundException(`No existe el allergies con id ${id}`);
+      throw new NotFoundException(`No existe el allergy con id ${id}`);
     }
     return findOneAllergy;
   }
@@ -47,9 +45,7 @@ export class AllergiesService {
   async update(id: string, updateAllergyDto: UpdateAllergyDto) {
     const [updatedAllergy] = await this.db
       .update(allergies)
-      .set({
-        ...updateAllergyDto,
-      })
+      .set(updateAllergyDto as unknown as Partial<AllergyInsert>) // cast
       .where(eq(allergies.id, id))
       .returning();
     if (!updatedAllergy) {
@@ -64,7 +60,7 @@ export class AllergiesService {
       .where(eq(allergies.id, id))
       .returning();
     if (!removeAllergy) {
-      throw new NotFoundException(`No existe el allergies con id ${id}`);
+      throw new NotFoundException(`No existe el allergy con id ${id}`);
     }
     return removeAllergy;
   }

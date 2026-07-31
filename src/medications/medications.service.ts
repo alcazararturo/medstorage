@@ -1,13 +1,13 @@
 import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
-import {
-  DRIZZLE_PROVIDER,
-  DrizzleClient,
-} from "../../server/db/database.module";
+import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
+import type { DrizzleClient } from "../../server/db/database.module";
 import { medications } from "../../server/db/schema";
+import type { InferInsertModel } from "drizzle-orm";
 import { CreateMedicationDto } from "./dto/create-medication.dto";
 import { UpdateMedicationDto } from "./dto/update-medication.dto";
+
+type MedicationsInsert = InferInsertModel<typeof medications>;
 
 @Injectable()
 export class MedicationsService {
@@ -18,9 +18,7 @@ export class MedicationsService {
   async create(createMedicationDto: CreateMedicationDto) {
     const [newMedications] = await this.db
       .insert(medications)
-      .values({
-        ...createMedicationDto,
-      })
+      .values(createMedicationDto as unknown as MedicationsInsert)
       .returning();
     return newMedications;
   }
@@ -46,9 +44,7 @@ export class MedicationsService {
   async update(id: string, updateMedicationDto: UpdateMedicationDto) {
     const [updatedMedications] = await this.db
       .update(medications)
-      .set({
-        ...updateMedicationDto,
-      })
+      .set(updateMedicationDto as unknown as Partial<MedicationsInsert>)
       .where(eq(medications.id, id))
       .returning();
     if (!updatedMedications) {

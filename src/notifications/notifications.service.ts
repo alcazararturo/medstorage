@@ -1,13 +1,13 @@
 import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
-import {
-  DRIZZLE_PROVIDER,
-  DrizzleClient,
-} from "../../server/db/database.module";
+import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
+import type { DrizzleClient } from "../../server/db/database.module";
 import { notifications } from "../../server/db/schema";
+import type { InferInsertModel } from "drizzle-orm";
 import { CreateNotificationDto } from "./dto/create-notification.dto";
 import { UpdateNotificationDto } from "./dto/update-notification.dto";
+
+type NotificationsInsert = InferInsertModel<typeof notifications>;
 
 @Injectable()
 export class NotificationsService {
@@ -18,9 +18,7 @@ export class NotificationsService {
   async create(createNotificationDto: CreateNotificationDto) {
     const [newNotifications] = await this.db
       .insert(notifications)
-      .values({
-        ...createNotificationDto,
-      })
+      .values(createNotificationDto as unknown as NotificationsInsert)
       .returning();
     return newNotifications;
   }
@@ -46,9 +44,7 @@ export class NotificationsService {
   async update(id: string, updateNotificationDto: UpdateNotificationDto) {
     const [updatedNotifications] = await this.db
       .update(notifications)
-      .set({
-        ...updateNotificationDto,
-      })
+      .set(updateNotificationDto as unknown as Partial<NotificationsInsert>)
       .where(eq(notifications.id, id))
       .returning();
     if (!updatedNotifications) {

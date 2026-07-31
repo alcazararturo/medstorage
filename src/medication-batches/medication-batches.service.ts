@@ -1,13 +1,13 @@
 import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
-import {
-  DRIZZLE_PROVIDER,
-  DrizzleClient,
-} from "../../server/db/database.module";
+import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
+import type { DrizzleClient } from "../../server/db/database.module";
 import { medicationBatches } from "../../server/db/schema";
+import type { InferInsertModel } from "drizzle-orm";
 import { CreateMedicationBatchDto } from "./dto/create-medication-batch.dto";
 import { UpdateMedicationBatchDto } from "./dto/update-medication-batch.dto";
+
+type MedicationBatchesInsert = InferInsertModel<typeof medicationBatches>;
 
 @Injectable()
 export class MedicationBatchesService {
@@ -18,13 +18,13 @@ export class MedicationBatchesService {
   async create(createMedicationBatchDto: CreateMedicationBatchDto) {
     const [newBatch] = await this.db
       .insert(medicationBatches)
-      .values({
-        ...createMedicationBatchDto,
-        quantity:
+      .values(
+        createMedicationBatchDto as unknown as MedicationBatchesInsert,
+        /* quantity:
           createMedicationBatchDto.quantity !== undefined
             ? createMedicationBatchDto.quantity.toString()
-            : undefined,
-      })
+            : undefined, */
+      )
       .returning();
     return newBatch;
   }
@@ -52,13 +52,13 @@ export class MedicationBatchesService {
   async update(id: string, updateMedicationBatchDto: UpdateMedicationBatchDto) {
     const [updatedBatch] = await this.db
       .update(medicationBatches)
-      .set({
-        ...updateMedicationBatchDto,
-        quantity:
+      .set(
+        updateMedicationBatchDto as unknown as Partial<MedicationBatchesInsert>,
+        /* quantity:
           updateMedicationBatchDto.quantity !== undefined
             ? updateMedicationBatchDto.quantity.toString()
-            : undefined,
-      })
+            : undefined, */
+      ) // cast
       .where(eq(medicationBatches.id, id))
       .returning();
     if (!updatedBatch) {

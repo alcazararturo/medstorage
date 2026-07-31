@@ -1,13 +1,13 @@
 import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
-import {
-  DRIZZLE_PROVIDER,
-  DrizzleClient,
-} from "../../server/db/database.module";
+import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
+import type { DrizzleClient } from "../../server/db/database.module";
 import { households } from "../../server/db/schema";
+import type { InferInsertModel } from "drizzle-orm";
 import { CreateHouseholdDto } from "./dto/create-household.dto";
 import { UpdateHouseholdDto } from "./dto/update-household.dto";
+
+type HouseholdsInsert = InferInsertModel<typeof households>;
 
 @Injectable()
 export class HouseholdsService {
@@ -18,9 +18,7 @@ export class HouseholdsService {
   async create(createHouseholdDto: CreateHouseholdDto) {
     const [newHouseholds] = await this.db
       .insert(households)
-      .values({
-        ...createHouseholdDto,
-      })
+      .values(createHouseholdDto as unknown as HouseholdsInsert)
       .returning();
     return newHouseholds;
   }
@@ -43,9 +41,7 @@ export class HouseholdsService {
   async update(id: string, updateHouseholdDto: UpdateHouseholdDto) {
     const [updatedHouseholds] = await this.db
       .update(households)
-      .set({
-        ...updateHouseholdDto,
-      })
+      .set(updateHouseholdDto as unknown as Partial<HouseholdsInsert>) // cast
       .where(eq(households.id, id))
       .returning();
     if (!updatedHouseholds) {
