@@ -1,4 +1,5 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { drizzle } from 'drizzle-orm/neon-http';
 import { eq } from 'drizzle-orm';
 import { DRIZZLE_PROVIDER, DrizzleClient } from "../../server/db/database.module";
 import { storageLocations } from '../../server/db/schema';
@@ -9,7 +10,7 @@ import { UpdateStorageLocationDto } from './dto/update-storage-location.dto';
 export class StorageLocationsService {
   constructor(
     @Inject(DRIZZLE_PROVIDER)
-    private readonly db: DrizzleClient
+    private readonly db: DrizzleClient,
   )
   async create(createStorageLocationDto: CreateStorageLocationDto) {
     const [newStorageLocations] = await this.db

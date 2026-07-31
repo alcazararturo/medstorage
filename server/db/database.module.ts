@@ -6,7 +6,7 @@ import * as schema from "./schema";
 
 export const DRIZZLE_PROVIDER = "DRIZZLE_PROVIDER";
 
-export type DrizzleClient = ReturnType<typeof drizzle<typeof schema>>;
+export type DrizzleClient = ReturnType<typeof drizzle>;
 
 @Global()
 @Module({
@@ -16,10 +16,9 @@ export type DrizzleClient = ReturnType<typeof drizzle<typeof schema>>;
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const databaseUrl = configService.getOrThrow<string>("DATABASE_URL");
-
         const sql = neon(databaseUrl);
 
-        return drizzle(sql, { schema });
+        return drizzle({ client: sql, schema });
       },
     },
   ],

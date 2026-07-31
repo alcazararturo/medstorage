@@ -1,21 +1,25 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
-import { DRIZZLE_PROVIDER, DrizzleClient } from "../../server/db/database.module";
-import { medicationActiveIngredients } from '../../server/db/schema';
-import { CreateMedActiveIngredientDto } from './dto/create-med-active-ingredient.dto';
-import { UpdateMedActiveIngredientDto } from './dto/update-med-active-ingredient.dto';
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
+import { drizzle } from "drizzle-orm/neon-http";
+import { eq } from "drizzle-orm";
+import {
+  DRIZZLE_PROVIDER,
+  DrizzleClient,
+} from "../../server/db/database.module";
+import { medicationActiveIngredients } from "../../server/db/schema";
+import { CreateMedActiveIngredientDto } from "./dto/create-med-active-ingredient.dto";
+import { UpdateMedActiveIngredientDto } from "./dto/update-med-active-ingredient.dto";
 
 @Injectable()
 export class MedActiveIngredientsService {
   constructor(
     @Inject(DRIZZLE_PROVIDER)
-    private readonly db: DrizzleClient
-  )
+    private readonly db: DrizzleClient,
+  ) {}
   async create(createMedActiveIngredientDto: CreateMedActiveIngredientDto) {
     const [newMedicationActiveIngredients] = await this.db
       .insert(medicationActiveIngredients)
       .values({
-        ...createMedActiveIngredientDto,        
+        ...createMedActiveIngredientDto,
       })
       .returning();
     return newMedicationActiveIngredients;
@@ -23,42 +27,55 @@ export class MedActiveIngredientsService {
 
   async findAll() {
     return this.db
-    .select()
-    .from(medicationActiveIngredients)
-    .orderBy(medicationActiveIngredients.medicationId, medicationActiveIngredients.name);
+      .select()
+      .from(medicationActiveIngredients)
+      .orderBy(
+        medicationActiveIngredients.medicationId,
+        medicationActiveIngredients.name,
+      );
   }
 
   async findOne(id: string) {
     const [findOneMedicationActiveIngredients] = await this.db
-    .select().from(medicationActiveIngredients).where(eq(medicationActiveIngredients.id, id));
+      .select()
+      .from(medicationActiveIngredients)
+      .where(eq(medicationActiveIngredients.id, id));
     if (!findOneMedicationActiveIngredients) {
-      throw new NotFoundException(`No existe medicationActiveIngredients con id ${id}`,); 
+      throw new NotFoundException(
+        `No existe medicationActiveIngredients con id ${id}`,
+      );
     }
     return findOneMedicationActiveIngredients;
   }
 
-  async update(id: string, updateMedActiveIngredientDto: UpdateMedActiveIngredientDto) {
+  async update(
+    id: string,
+    updateMedActiveIngredientDto: UpdateMedActiveIngredientDto,
+  ) {
     const [updatedMedicationActiveIngredients] = await this.db
       .update(medicationActiveIngredients)
       .set({
-        ...updateMedActiveIngredientDto,        
+        ...updateMedActiveIngredientDto,
       })
       .where(eq(medicationActiveIngredients.id, id))
       .returning();
-      if (!updatedMedicationActiveIngredients) {
-        throw new NotFoundException(`No existe medicationActiveIngredients con id ${id}`,);
-      }
+    if (!updatedMedicationActiveIngredients) {
+      throw new NotFoundException(
+        `No existe medicationActiveIngredients con id ${id}`,
+      );
+    }
     return updatedMedicationActiveIngredients;
   }
 
   async remove(id: string) {
-    const [removeMedicationActiveIngredients] = await this.db.delete(medicationActiveIngredients)
-    .where(eq(medicationActiveIngredients.id, id))
-    .returning();
+    const [removeMedicationActiveIngredients] = await this.db
+      .delete(medicationActiveIngredients)
+      .where(eq(medicationActiveIngredients.id, id))
+      .returning();
     if (!removeMedicationActiveIngredients) {
-       throw new NotFoundException(
+      throw new NotFoundException(
         `No existe medicationActiveIngredients con id ${id}`,
-      );      
+      );
     }
     return removeMedicationActiveIngredients;
   }
