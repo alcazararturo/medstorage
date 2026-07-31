@@ -7,7 +7,7 @@ import { medicationBatches } from "../../../server/db/schema"; // Modifica la ru
 const BaseInsertBatchSchema = createInsertSchema(medicationBatches);
 
 // 2. Refinamos campos si es necesario (Opcional, pero muy recomendado para tipos de datos complejos)
-const RefinedBatchSchema = BaseInsertBatchSchema.extend({
+export const RefinedBatchSchema = BaseInsertBatchSchema.extend({
   // Drizzle lee 'decimal' como string para evitar pérdida de precisión.
   // Con esto forzamos a que la API acepte un número en el JSON y Zod lo valide.
   quantity: z.number().positive(),

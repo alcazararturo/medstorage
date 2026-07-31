@@ -16,16 +16,19 @@ export class MedicationBatchesService {
       .insert(medicationBatches)
       .values({
         ...createMedicationBatchDto,        
-        quantity: createMedicationBatchDto.quantity.toString(), 
+        createMedicationBatchDto.quantity !== undefined
+        ? createMedicationBatchDto.quantity.toString()
+        : undefined,
       })
       .returning();
     return newBatch;
   }
 
   async findAll() {
-    const [findBatch] = await this.db
-    .select().from(medicationBatches).orderBy(medicationBatches.expirationDate);
-    return findBatch;
+    return this.db
+    .select()
+    .from(medicationBatches)
+    .orderBy(medicationBatches.expirationDate);    
   }
 
   async findOne(id: string) {
@@ -42,7 +45,9 @@ export class MedicationBatchesService {
       .update(medicationBatches)
       .set({
         ...updateMedicationBatchDto,
-        quantity: updateMedicationBatchDto.quantity ? updateMedicationBatchDto.quantity.toString() : undefined,
+        updateMedicationBatchDto.quantity !== undefined
+        ? updateMedicationBatchDto.quantity.toString()
+        : undefined,
       })
       .where(eq(medicationBatches.id, id))
       .returning();
@@ -57,7 +62,9 @@ export class MedicationBatchesService {
     .where(eq(medicationBatches.id, id))
     .returning();
     if (!removeBatch) {
-      `No existe el lote de medicamento con id ${id}`,
+      throw new NotFoundException(
+        `No existe el lote de medicamento con id ${id}`,
+      );      
     }
     return removeBatch;
   }

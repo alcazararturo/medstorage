@@ -1,4 +1,6 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateFamilyMemberDto } from './create-family-member.dto';
+import { createZodDto } from "nestjs-zod";
+import { RefinedMembersSchema } from "./create-family-member.dto";
 
-export class UpdateFamilyMemberDto extends PartialType(CreateFamilyMemberDto) {}
+export class UpdateFamilyMemberDto extends createZodDto(
+  RefinedMembersSchema.partial(),
+) {}

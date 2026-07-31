@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { DRIZZLE_PROVIDER, DrizzleClient } from "../../server/db/database.module";
-import { notifications } from '../../../server/db/schema';
+import { notifications } from '../../server/db/schema';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 
@@ -12,51 +12,53 @@ export class NotificationsService {
     private readonly db: DrizzleClient
   )
   async create(createNotificationDto: CreateNotificationDto) {
-    const [newBatch] = await this.db
+    const [newNotifications] = await this.db
       .insert(notifications)
       .values({
         ...createNotificationDto,        
       })
       .returning();
-    return newBatch;
+    return newNotifications;
   }
 
   async findAll() {
-    const [findBatch] = await this.db
-    .select().from(notifications).orderBy(notifications.familyMemberId, notifications.type);
-    return findBatch;
+    return this.db
+    .select()
+    .from(notifications)
+    .orderBy(notifications.familyMemberId, notifications.type);
   }
 
   async findOne(id: string) {
-    const [findOneBatch] = await this.db
+    const [findOneNotifications] = await this.db
     .select().from(notifications).where(eq(notifications.id, id));
-    if (!findOneBatch) {
+    if (!findOneNotifications) {
       throw new NotFoundException(`No existe la notifications con id ${id}`,); 
     }
-    return findOneBatch;
+    return findOneNotifications;
   }
 
   async update(id: string, updateNotificationDto: UpdateNotificationDto) {
-    const [updatedBatch] = await this.db
+    const [updatedNotifications] = await this.db
       .update(notifications)
       .set({
         ...updateNotificationDto,        
       })
       .where(eq(notifications.id, id))
       .returning();
-      if (!updatedBatch) {
+      if (!updatedNotifications) {
         throw new NotFoundException(`No existe la notifications con id ${id}`,);
       }
-    return updatedBatch;
+    return updatedNotifications;
   }
 
   async remove(id: string) {
-    const [removeBatch] = await this.db.delete(notifications)
+    const [removeNotifications] = await this.db.delete(notifications)
     .where(eq(notifications.id, id))
     .returning();
-    if (!removeBatch) {
-      `No existe la notifications con id ${id}`,
+    if (!removeNotifications) {
+      throw new NotFoundException(
+        `No existe la notifications con id ${id}`,);
     }
-    return removeBatch;
+    return removeNotifications;
   }
 }

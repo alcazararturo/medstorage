@@ -4,6 +4,6 @@ import { z } from "zod";
 import { households } from "../../../server/db/schema";
 
 // 1. Generamos el esquema base desde Drizzle
-const HouseholdsSchema = createInsertSchema(households);
+export const HouseholdsSchema = createInsertSchema(households);
 
 export class CreateHouseholdDto extends createZodDto(HouseholdsSchema) {}

@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { DRIZZLE_PROVIDER, DrizzleClient } from "../../server/db/database.module";
-import { householdUsers } from '../../../server/db/schema';
+import { householdUsers } from '../../server/db/schema';
 import { CreateHouseholdUserDto } from './dto/create-household-user.dto';
 import { UpdateHouseholdUserDto } from './dto/update-household-user.dto';
 
@@ -12,51 +12,54 @@ export class HouseholdUsersService {
     private readonly db: DrizzleClient
   )
   async create(createHouseholdUserDto: CreateHouseholdUserDto) {
-    const [newBatch] = await this.db
+    const [newHouseholdUsers] = await this.db
       .insert(householdUsers)
       .values({
         ...createHouseholdUserDto,        
       })
       .returning();
-    return newBatch;
+    return newHouseholdUsers;
   }
 
   async findAll() {
-    const [findBatch] = await this.db
-    .select().from(householdUsers).orderBy(householdUsers.userId, householdUsers.householdId);
-    return findBatch;
+    return this.db
+    .select()
+    .from(householdUsers)
+    .orderBy(householdUsers.userId, householdUsers.householdId);
   }
 
   async findOne(id: string) {
-    const [findOneBatch] = await this.db
+    const [findOneHouseholdUsers] = await this.db
     .select().from(householdUsers).where(eq(householdUsers.id, id));
-    if (!findOneBatch) {
+    if (!findOneHouseholdUsers) {
       throw new NotFoundException(`No existe el householdUsers con id ${id}`,); 
     }
-    return findOneBatch;
+    return findOneHouseholdUsers;
   }
 
   async update(id: string, updateHouseholdUserDto: UpdateHouseholdUserDto) {
-    const [updatedBatch] = await this.db
+    const [updatedHouseholdUsers] = await this.db
       .update(householdUsers)
       .set({
         ...updateHouseholdUserDto,        
       })
       .where(eq(householdUsers.id, id))
       .returning();
-      if (!updatedBatch) {
+      if (!updatedHouseholdUsers) {
         throw new NotFoundException(`No existe el householdUsers con id ${id}`,);
       }
-    return updatedBatch;
+    return updatedHouseholdUsers;
   }
 
   async remove(id: string) {
-    const [removeBatch] = await this.db.delete(householdUsers)
+    const [removeHouseholdUsers] = await this.db.delete(householdUsers)
     .where(eq(householdUsers.id, id))
     .returning();
-    if (!removeBatch) {
-      `No existe el householdUsers con id ${id}`,
+    if (!removeHouseholdUsers) {
+      throw new NotFoundException(
+        `No existe el householdUsers con id ${id}`,
+      );
     }
-    return removeBatch;
+    return removeHouseholdUsers;
   }
 }

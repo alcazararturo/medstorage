@@ -7,7 +7,7 @@ import { familyMembers } from "../../../server/db/schema"; // Modifica la ruta s
 const FamilyMembersSchema = createInsertSchema(familyMembers);
 
 // 2. Refinamos campos si es necesario (Opcional, pero muy recomendado para tipos de datos complejos)
-const RefinedMembersSchema = FamilyMembersSchema.extend({
+export const RefinedMembersSchema = FamilyMembersSchema.extend({
   // Forzamos a que las fechas se envíen en formato texto ISO (YYYY-MM-DD)
   birthDate: z
     .string()

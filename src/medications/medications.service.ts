@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { DRIZZLE_PROVIDER, DrizzleClient } from "../../server/db/database.module";
-import { medications } from '../../../server/db/schema';
+import { medications } from '../../server/db/schema';
 import { CreateMedicationDto } from './dto/create-medication.dto';
 import { UpdateMedicationDto } from './dto/update-medication.dto';
 
@@ -12,51 +12,54 @@ export class MedicationsService {
     private readonly db: DrizzleClient
   )
   async create(createMedicationDto: CreateMedicationDto) {
-    const [newBatch] = await this.db
+    const [newMedications] = await this.db
       .insert(medications)
       .values({
         ...createMedicationDto,        
       })
       .returning();
-    return newBatch;
+    return newMedications;
   }
 
   async findAll() {
-    const [findBatch] = await this.db
-    .select().from(medications).orderBy(medications.householdId, medications.brandName);
-    return findBatch;
+    return this.db
+    .select()
+    .from(medications)
+    .orderBy(medications.householdId, medications.brandName);
   }
 
   async findOne(id: string) {
-    const [findOneBatch] = await this.db
+    const [findOneMedications] = await this.db
     .select().from(medications).where(eq(medications.id, id));
-    if (!findOneBatch) {
+    if (!findOneMedications) {
       throw new NotFoundException(`No existe el medicamento con id ${id}`,); 
     }
-    return findOneBatch;
+    return findOneMedications;
   }
 
   async update(id: string, updateMedicationDto: UpdateMedicationDto) {
-    const [updatedBatch] = await this.db
+    const [updatedMedications] = await this.db
       .update(medications)
       .set({
         ...updateMedicationDto,        
       })
       .where(eq(medications.id, id))
       .returning();
-      if (!updatedBatch) {
+      if (!updatedMedications) {
         throw new NotFoundException(`No existe el medicamento con id ${id}`,);
       }
-    return updatedBatch;
+    return updatedMedications;
   }
 
   async remove(id: string) {
-    const [removeBatch] = await this.db.delete(medications)
+    const [removeMedications] = await this.db.delete(medications)
     .where(eq(medications.id, id))
     .returning();
-    if (!removeBatch) {
-      `No existe el medicamento con id ${id}`,
+    if (!removeMedications) {
+      throw new NotFoundException(
+        `No existe el medicamento con id ${id}`,
+      );      
     }
-    return removeBatch;
+    return removeMedications;
   }
 }

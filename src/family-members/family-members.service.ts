@@ -12,51 +12,54 @@ export class FamilyMembersService {
     private readonly db: DrizzleClient
   )
   async create(createFamilyMemberDto: CreateFamilyMemberDto) {
-    const [newBatch] = await this.db
+    const [newFamilyMember] = await this.db
       .insert(familyMembers)
       .values({
         ...createFamilyMemberDto,
       })
       .returning();
-    return newBatch;
+    return newFamilyMember;
   }
 
   async findAll() {
-    const [findBatch] = await this.db
-    .select().from(familyMembers).orderBy(familyMembers.fullName);
-    return findBatch;
+    return this.db
+    .select()
+    .from(familyMembers)
+    .orderBy(familyMembers.fullName);
   }
 
   async findOne(id: string) {
-    const [findOneBatch] = await this.db
+    const [findOneFamilyMember] = await this.db
     .select().from(familyMembers).where(eq(familyMembers.id, id));
-    if (!findOneBatch) {
+    if (!findOneFamilyMember) {
       throw new NotFoundException(`No existe el familiar con id ${id}`,); 
     }
-    return findOneBatch;
+    return findOneFamilyMember;
   }
 
   async update(id: string, updateFamilyMemberDto: UpdateFamilyMemberDto) {
-    const [updatedBatch] = await this.db
+    const [updatedFamilyMember] = await this.db
       .update(familyMembers)
       .set({
         ...updateFamilyMemberDto,
       })
       .where(eq(familyMembers.id, id))
       .returning();
-      if (!updatedBatch) {
+      if (!updatedFamilyMember) {
         throw new NotFoundException(`No existe el familiar con id ${id}`,);
       }
-    return updatedBatch;
+    return updatedFamilyMember;
   }
 
   async remove(id: string) {
-    const [removeBatch] = await this.db.delete(familyMembers)
+    const [removeFamilyMember] = await this.db.delete(familyMembers)
     .where(eq(familyMembers.id, id))
     .returning();
-    if (!removeBatch) {
-      `No existe el familiar con id ${id}`,
+    if (!removeFamilyMember) {
+      throw new NotFoundException(
+        `No existe el familiar con id ${id}`,
+      );
     }
-    return removeBatch;
+    return removeFamilyMember;
   }
 }

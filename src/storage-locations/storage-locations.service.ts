@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { DRIZZLE_PROVIDER, DrizzleClient } from "../../server/db/database.module";
-import { storageLocations } from '../../../server/db/schema';
+import { storageLocations } from '../../server/db/schema';
 import { CreateStorageLocationDto } from './dto/create-storage-location.dto';
 import { UpdateStorageLocationDto } from './dto/update-storage-location.dto';
 
@@ -12,51 +12,52 @@ export class StorageLocationsService {
     private readonly db: DrizzleClient
   )
   async create(createStorageLocationDto: CreateStorageLocationDto) {
-    const [newBatch] = await this.db
+    const [newStorageLocations] = await this.db
       .insert(storageLocations)
       .values({
         ...createStorageLocationDto,        
       })
       .returning();
-    return newBatch;
+    return newStorageLocations;
   }
 
   async findAll() {
-    const [findBatch] = await this.db
-    .select().from(storageLocations).orderBy(storageLocations.householdId, storageLocations.name);
-    return findBatch;
+    return this.db
+    .select()
+    .from(storageLocations)
+    .orderBy(storageLocations.householdId, storageLocations.name);
   }
 
   async findOne(id: string) {
-    const [findOneBatch] = await this.db
+    const [findOneStorageLocations] = await this.db
     .select().from(storageLocations).where(eq(storageLocations.id, id));
-    if (!findOneBatch) {
+    if (!findOneStorageLocations) {
       throw new NotFoundException(`No existe el storageLocations con id ${id}`,); 
     }
-    return findOneBatch;
+    return findOneStorageLocations;
   }
 
   async update(id: string, updateStorageLocationDto: UpdateStorageLocationDto) {
-    const [updatedBatch] = await this.db
+    const [updatedStorageLocations] = await this.db
       .update(storageLocations)
       .set({
         ...updateStorageLocationDto,        
       })
       .where(eq(storageLocations.id, id))
       .returning();
-      if (!updatedBatch) {
+      if (!updatedStorageLocations) {
         throw new NotFoundException(`No existe el storageLocations con id ${id}`,);
       }
-    return updatedBatch;
+    return updatedStorageLocations;
   }
 
   async remove(id: string) {
-    const [removeBatch] = await this.db.delete(storageLocations)
+    const [removeStorageLocations] = await this.db.delete(storageLocations)
     .where(eq(storageLocations.id, id))
     .returning();
-    if (!removeBatch) {
+    if (!removeStorageLocations) {
       `No existe el storageLocations con id ${id}`,
     }
-    return removeBatch;
+    return removeStorageLocations;
   }
 }

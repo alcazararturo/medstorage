@@ -4,7 +4,7 @@ import { z } from "zod";
 import { medicationActiveIngredients } from "../../../server/db/schema";
 
 // 1. Generamos el esquema base desde Drizzle
-const MedActiveIngredientsSchema = createInsertSchema(
+export const MedActiveIngredientsSchema = createInsertSchema(
   medicationActiveIngredients,
 );
 

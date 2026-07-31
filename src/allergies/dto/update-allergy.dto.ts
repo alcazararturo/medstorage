@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateAllergyDto } from './create-allergy.dto';
+import { createZodDto } from "nestjs-zod";
+import { AllergiesSchema } from "./create-allergy.dto";
 
-export class UpdateAllergyDto extends PartialType(CreateAllergyDto) {}
+export class UpdateAllergyDto extends createZodDto(AllergiesSchema.partial()) {}
