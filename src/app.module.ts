@@ -11,7 +11,9 @@ import { FamilyMembersModule } from "./family-members/family-members.module";
 import { AllergiesModule } from "./allergies/allergies.module";
 import { StorageLocationsModule } from "./storage-locations/storage-locations.module";
 import { MedActiveIngredientsModule } from "./med-active-ingredients/med-active-ingredients.module";
-import { NotificationsModule } from './notifications/notifications.module';
+import { NotificationsModule } from "./notifications/notifications.module";
+import { UsersModule } from "./auth/auth.module";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     StorageLocationsModule,
     MedActiveIngredientsModule,
     NotificationsModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
