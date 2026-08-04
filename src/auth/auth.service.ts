@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
-import { LoginDto } from "./dto/login.dto";
+import { LoginDto } from "../users/dto/login.dto";
 import * as argon2 from "argon2";
 
 @Injectable()

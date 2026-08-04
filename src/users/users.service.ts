@@ -1,8 +1,6 @@
 import { Injectable, Inject, ConflictException } from "@nestjs/common";
-import {
-  DRIZZLE_PROVIDER,
-  DrizzleClient,
-} from "../../server/db/database.module";
+import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
+import type { DrizzleClient } from "../../server/db/database.module";
 import { users } from "../../server/db/schema";
 import { eq } from "drizzle-orm";
 import { CreateUserDto } from "./dto/create-user.dto";

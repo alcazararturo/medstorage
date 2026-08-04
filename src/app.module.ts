@@ -12,7 +12,7 @@ import { AllergiesModule } from "./allergies/allergies.module";
 import { StorageLocationsModule } from "./storage-locations/storage-locations.module";
 import { MedActiveIngredientsModule } from "./med-active-ingredients/med-active-ingredients.module";
 import { NotificationsModule } from "./notifications/notifications.module";
-import { UsersModule } from "./auth/auth.module";
+import { UsersModule } from "./users/users.module";
 import { AuthModule } from "./auth/auth.module";
 
 @Module({

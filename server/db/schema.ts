@@ -19,6 +19,8 @@ import { relations, sql } from "drizzle-orm";
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "user"]);
 
+export const householdRoleEnum = pgEnum("household_role", ["owner", "member"]);
+
 export const allergySeverityEnum = pgEnum("allergy_severity", [
   "unknown",
   "mild",
@@ -52,6 +54,7 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   fullName: varchar("full_name", { length: 150 }).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
+  role: userRoleEnum("role").default("user").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -87,7 +90,7 @@ export const householdUsers = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    role: userRoleEnum("role").default("user").notNull(),
+    role: householdRoleEnum("role").default("member").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
