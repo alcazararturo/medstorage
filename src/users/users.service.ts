@@ -12,9 +12,9 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const { email, password, fullName } = createUserDto;
+    const normalizedEmail = email.trim().toLowerCase();
 
-    // Verificar si el email ya existe
-    const existingUser = await this.findOneByEmail(email);
+    const existingUser = await this.findOneByEmail(normalizedEmail);
     if (existingUser) {
       throw new ConflictException("El correo electrónico ya está registrado");
     }
@@ -26,14 +26,16 @@ export class UsersService {
     const [newUser] = await this.db
       .insert(users)
       .values({
-        email: email.toLowerCase(),
+        email: normalizedEmail,
         passwordHash,
-        fullName,
+        fullName: fullName.trim(),
       })
       .returning({
         id: users.id,
         email: users.email,
         fullName: users.fullName,
+        role: users.role,
+        isActive: users.isActive,
         createdAt: users.createdAt,
       });
 
@@ -56,6 +58,7 @@ export class UsersService {
         id: users.id,
         email: users.email,
         fullName: users.fullName,
+        role: users.role,
         isActive: users.isActive,
       })
       .from(users)

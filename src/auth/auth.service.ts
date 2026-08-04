@@ -14,9 +14,7 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.usersService.findOneByEmail(loginDto.email);
     if (!user || !user.isActive) {
-      throw new UnauthorizedException(
-        "Credenciales incorrectas o cuenta inactiva",
-      );
+      throw new UnauthorizedException("Credenciales incorrectas");
     }
 
     // Verificar contraseña usando Argon2
@@ -28,14 +26,14 @@ export class AuthService {
       throw new UnauthorizedException("Credenciales incorrectas");
     }
 
-    // Generar Payload del JWT (No metas datos sensibles aquí)
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, role: user.role };
 
     return {
       user: {
         id: user.id,
         email: user.email,
         fullName: user.fullName,
+        role: user.role,
       },
       accessToken: await this.jwtService.signAsync(payload),
     };
