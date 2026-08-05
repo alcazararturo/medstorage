@@ -7,6 +7,7 @@ import {
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { LoginDto } from "../users/dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
 import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
 import type { DrizzleClient } from "../../server/db/database.module";
 import { users, households, householdUsers } from "../../server/db/schema";
@@ -111,7 +112,7 @@ export class AuthService {
         user.passwordHash,
         loginDto.password,
       );
-    } catch (error) {
+    } catch {
       isPasswordValid = false;
     }
 
