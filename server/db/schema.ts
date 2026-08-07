@@ -10,35 +10,35 @@ import {
   decimal,
   uniqueIndex,
   index,
-} from "drizzle-orm/pg-core";
-import { relations, sql } from "drizzle-orm";
+} from 'drizzle-orm/pg-core';
+import { relations, sql } from 'drizzle-orm';
 
 // =========================================================================
 // 1. DEFINICIÓN DE ENUMS
 // =========================================================================
 
-export const userRoleEnum = pgEnum("user_role", ["admin", "user"]);
+export const userRoleEnum = pgEnum('user_role', ['admin', 'user']);
 
-export const householdRoleEnum = pgEnum("household_role", ["owner", "member"]);
+export const householdRoleEnum = pgEnum('household_role', ['owner', 'member']);
 
-export const allergySeverityEnum = pgEnum("allergy_severity", [
-  "unknown",
-  "mild",
-  "moderate",
-  "severe",
+export const allergySeverityEnum = pgEnum('allergy_severity', [
+  'unknown',
+  'mild',
+  'moderate',
+  'severe',
 ]);
 
-export const notificationTypeEnum = pgEnum("notification_type", [
-  "expired_medication",
-  "expiring_medication",
-  "low_stock",
-  "allergy_warning",
+export const notificationTypeEnum = pgEnum('notification_type', [
+  'expired_medication',
+  'expiring_medication',
+  'low_stock',
+  'allergy_warning',
 ]);
 
-export const notificationStatusEnum = pgEnum("notification_status", [
-  "pending",
-  "read",
-  "dismissed",
+export const notificationStatusEnum = pgEnum('notification_status', [
+  'pending',
+  'read',
+  'dismissed',
 ]);
 
 // =========================================================================
@@ -46,57 +46,57 @@ export const notificationStatusEnum = pgEnum("notification_status", [
 // =========================================================================
 
 // --- USERS ---
-export const users = pgTable("users", {
-  id: uuid("id")
+export const users = pgTable('users', {
+  id: uuid('id')
     .primaryKey()
     .default(sql`uuid_generate_v4()`),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  passwordHash: text("password_hash").notNull(),
-  fullName: varchar("full_name", { length: 150 }).notNull(),
-  isActive: boolean("is_active").default(true).notNull(),
-  role: userRoleEnum("role").default("user").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  fullName: varchar('full_name', { length: 150 }).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  role: userRoleEnum('role').default('user').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
+  updatedAt: timestamp('updated_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
 });
 
 // --- HOUSEHOLDS ---
-export const households = pgTable("households", {
-  id: uuid("id")
+export const households = pgTable('households', {
+  id: uuid('id')
     .primaryKey()
     .default(sql`uuid_generate_v4()`),
-  name: varchar("name", { length: 150 }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
+  name: varchar('name', { length: 150 }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
+  updatedAt: timestamp('updated_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
 });
 
 // --- HOUSEHOLD USERS ---
 export const householdUsers = pgTable(
-  "household_users",
+  'household_users',
   {
-    id: uuid("id")
+    id: uuid('id')
       .primaryKey()
       .default(sql`uuid_generate_v4()`),
-    householdId: uuid("household_id")
+    householdId: uuid('household_id')
       .notNull()
-      .references(() => households.id, { onDelete: "cascade" }),
-    userId: uuid("user_id")
+      .references(() => households.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    role: householdRoleEnum("role").default("member").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
+      .references(() => users.id, { onDelete: 'cascade' }),
+    role: householdRoleEnum('role').default('member').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
   (table) => [
-    uniqueIndex("household_users_household_id_user_id_key").on(
+    uniqueIndex('household_users_household_id_user_id_key').on(
       table.householdId,
       table.userId,
     ),
@@ -105,74 +105,74 @@ export const householdUsers = pgTable(
 
 // --- FAMILY MEMBERS ---
 export const familyMembers = pgTable(
-  "family_members",
+  'family_members',
   {
-    id: uuid("id")
+    id: uuid('id')
       .primaryKey()
       .default(sql`uuid_generate_v4()`),
-    householdId: uuid("household_id")
+    householdId: uuid('household_id')
       .notNull()
-      .references(() => households.id, { onDelete: "cascade" }),
-    fullName: varchar("full_name", { length: 150 }).notNull(),
-    birthDate: date("birth_date"),
-    notes: text("notes"),
-    createdAt: timestamp("created_at", { withTimezone: true })
+      .references(() => households.id, { onDelete: 'cascade' }),
+    fullName: varchar('full_name', { length: 150 }).notNull(),
+    birthDate: date('birth_date'),
+    notes: text('notes'),
+    createdAt: timestamp('created_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+    updatedAt: timestamp('updated_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
-  (table) => [index("idx_family_members_household_id").on(table.householdId)],
+  (table) => [index('idx_family_members_household_id').on(table.householdId)],
 );
 
 // --- ALLERGIES ---
 export const allergies = pgTable(
-  "allergies",
+  'allergies',
   {
-    id: uuid("id")
+    id: uuid('id')
       .primaryKey()
       .default(sql`uuid_generate_v4()`),
-    familyMemberId: uuid("family_member_id")
+    familyMemberId: uuid('family_member_id')
       .notNull()
-      .references(() => familyMembers.id, { onDelete: "cascade" }),
-    allergenName: varchar("allergen_name", { length: 255 }).notNull(),
-    activeIngredientName: varchar("active_ingredient_name", { length: 255 }),
-    severity: allergySeverityEnum("severity").default("unknown").notNull(),
-    reactionDescription: text("reaction_description"),
-    isConfirmed: boolean("is_confirmed").default(false).notNull(),
-    notes: text("notes"),
-    createdAt: timestamp("created_at", { withTimezone: true })
+      .references(() => familyMembers.id, { onDelete: 'cascade' }),
+    allergenName: varchar('allergen_name', { length: 255 }).notNull(),
+    activeIngredientName: varchar('active_ingredient_name', { length: 255 }),
+    severity: allergySeverityEnum('severity').default('unknown').notNull(),
+    reactionDescription: text('reaction_description'),
+    isConfirmed: boolean('is_confirmed').default(false).notNull(),
+    notes: text('notes'),
+    createdAt: timestamp('created_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+    updatedAt: timestamp('updated_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
-  (table) => [index("idx_allergies_family_member_id").on(table.familyMemberId)],
+  (table) => [index('idx_allergies_family_member_id').on(table.familyMemberId)],
 );
 
 // --- STORAGE LOCATIONS ---
 export const storageLocations = pgTable(
-  "storage_locations",
+  'storage_locations',
   {
-    id: uuid("id")
+    id: uuid('id')
       .primaryKey()
       .default(sql`uuid_generate_v4()`),
-    householdId: uuid("household_id")
+    householdId: uuid('household_id')
       .notNull()
-      .references(() => households.id, { onDelete: "cascade" }),
-    name: varchar("name", { length: 150 }).notNull(),
-    description: text("description"),
-    createdAt: timestamp("created_at", { withTimezone: true })
+      .references(() => households.id, { onDelete: 'cascade' }),
+    name: varchar('name', { length: 150 }).notNull(),
+    description: text('description'),
+    createdAt: timestamp('created_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+    updatedAt: timestamp('updated_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
   (table) => [
-    uniqueIndex("storage_locations_household_id_name_key").on(
+    uniqueIndex('storage_locations_household_id_name_key').on(
       table.householdId,
       table.name,
     ),
@@ -180,47 +180,47 @@ export const storageLocations = pgTable(
 );
 
 // --- MEDICATIONS ---
-export const medications = pgTable("medications", {
-  id: uuid("id")
+export const medications = pgTable('medications', {
+  id: uuid('id')
     .primaryKey()
     .default(sql`uuid_generate_v4()`),
-  householdId: uuid("household_id")
+  householdId: uuid('household_id')
     .notNull()
-    .references(() => households.id, { onDelete: "cascade" }),
-  brandName: varchar("brand_name", { length: 255 }).notNull(),
-  genericName: varchar("generic_name", { length: 255 }),
-  pharmaceuticalForm: varchar("pharmaceutical_form", { length: 100 }),
-  concentration: varchar("concentration", { length: 100 }),
-  presentation: varchar("presentation", { length: 150 }),
-  barcode: varchar("barcode", { length: 100 }),
-  imageUrl: text("image_url"),
-  informationSourceUrl: text("information_source_url"),
-  notes: text("notes"),
-  createdAt: timestamp("created_at", { withTimezone: true })
+    .references(() => households.id, { onDelete: 'cascade' }),
+  brandName: varchar('brand_name', { length: 255 }).notNull(),
+  genericName: varchar('generic_name', { length: 255 }),
+  pharmaceuticalForm: varchar('pharmaceutical_form', { length: 100 }),
+  concentration: varchar('concentration', { length: 100 }),
+  presentation: varchar('presentation', { length: 150 }),
+  barcode: varchar('barcode', { length: 100 }),
+  imageUrl: text('image_url'),
+  informationSourceUrl: text('information_source_url'),
+  notes: text('notes'),
+  createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
+  updatedAt: timestamp('updated_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
 });
 
 // --- MEDICATION ACTIVE INGREDIENTS ---
 export const medicationActiveIngredients = pgTable(
-  "medication_active_ingredients",
+  'medication_active_ingredients',
   {
-    id: uuid("id")
+    id: uuid('id')
       .primaryKey()
       .default(sql`uuid_generate_v4()`),
-    medicationId: uuid("medication_id")
+    medicationId: uuid('medication_id')
       .notNull()
-      .references(() => medications.id, { onDelete: "cascade" }),
-    name: varchar("name", { length: 255 }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
+      .references(() => medications.id, { onDelete: 'cascade' }),
+    name: varchar('name', { length: 255 }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
   (table) => [
-    uniqueIndex("medication_active_ingredients_medication_id_name_key").on(
+    uniqueIndex('medication_active_ingredients_medication_id_name_key').on(
       table.medicationId,
       table.name,
     ),
@@ -229,61 +229,61 @@ export const medicationActiveIngredients = pgTable(
 
 // --- MEDICATION BATCHES ---
 export const medicationBatches = pgTable(
-  "medication_batches",
+  'medication_batches',
   {
-    id: uuid("id")
+    id: uuid('id')
       .primaryKey()
       .default(sql`uuid_generate_v4()`),
-    medicationId: uuid("medication_id")
+    medicationId: uuid('medication_id')
       .notNull()
-      .references(() => medications.id, { onDelete: "cascade" }),
-    storageLocationId: uuid("storage_location_id")
+      .references(() => medications.id, { onDelete: 'cascade' }),
+    storageLocationId: uuid('storage_location_id')
       .notNull()
-      .references(() => storageLocations.id, { onDelete: "restrict" }),
-    lotNumber: varchar("lot_number", { length: 100 }),
-    expirationDate: date("expiration_date").notNull(),
-    quantity: decimal("quantity", { precision: 10, scale: 2 })
-      .default("0.00")
+      .references(() => storageLocations.id, { onDelete: 'restrict' }),
+    lotNumber: varchar('lot_number', { length: 100 }),
+    expirationDate: date('expiration_date').notNull(),
+    quantity: decimal('quantity', { precision: 10, scale: 2 })
+      .default('0.00')
       .notNull(),
-    unit: varchar("unit", { length: 50 }).default("unidades").notNull(),
-    openedAt: date("opened_at"),
-    notes: text("notes"),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    unit: varchar('unit', { length: 50 }).default('unidades').notNull(),
+    openedAt: date('opened_at'),
+    notes: text('notes'),
+    createdAt: timestamp('created_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+    updatedAt: timestamp('updated_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
   (table) => [
-    index("idx_medication_batches_expiration_date").on(table.expirationDate),
-    index("idx_medication_batches_medication_id").on(table.medicationId),
+    index('idx_medication_batches_expiration_date').on(table.expirationDate),
+    index('idx_medication_batches_medication_id').on(table.medicationId),
   ],
 );
 
 // --- NOTIFICATIONS ---
-export const notifications = pgTable("notifications", {
-  id: uuid("id")
+export const notifications = pgTable('notifications', {
+  id: uuid('id')
     .primaryKey()
     .default(sql`uuid_generate_v4()`),
-  householdId: uuid("household_id")
+  householdId: uuid('household_id')
     .notNull()
-    .references(() => households.id, { onDelete: "cascade" }),
-  medicationBatchId: uuid("medication_batch_id").references(
+    .references(() => households.id, { onDelete: 'cascade' }),
+  medicationBatchId: uuid('medication_batch_id').references(
     () => medicationBatches.id,
-    { onDelete: "cascade" },
+    { onDelete: 'cascade' },
   ),
-  familyMemberId: uuid("family_member_id").references(() => familyMembers.id, {
-    onDelete: "cascade",
+  familyMemberId: uuid('family_member_id').references(() => familyMembers.id, {
+    onDelete: 'cascade',
   }),
-  type: notificationTypeEnum("type").notNull(),
-  status: notificationStatusEnum("status").default("pending").notNull(),
-  title: varchar("title", { length: 255 }).notNull(),
-  message: text("message").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
+  type: notificationTypeEnum('type').notNull(),
+  status: notificationStatusEnum('status').default('pending').notNull(),
+  title: varchar('title', { length: 255 }).notNull(),
+  message: text('message').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
-  readAt: timestamp("read_at", { withTimezone: true }),
+  readAt: timestamp('read_at', { withTimezone: true }),
 });
 
 // =========================================================================

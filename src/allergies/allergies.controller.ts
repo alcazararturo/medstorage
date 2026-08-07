@@ -6,13 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-} from "@nestjs/common";
-import { AllergiesService } from "./allergies.service";
-import { CreateAllergyDto } from "./dto/create-allergy.dto";
-import { UpdateAllergyDto } from "./dto/update-allergy.dto";
-import { ParamsDto } from "../util/dto/paramsSchema";
+} from '@nestjs/common';
+import { AllergiesService } from './allergies.service';
+import { CreateAllergyDto } from './dto/create-allergy.dto';
+import { UpdateAllergyDto } from './dto/update-allergy.dto';
+import { ParamsDto } from '../util/dto/paramsSchema';
 
-@Controller("allergies")
+@Controller('allergies')
 export class AllergiesController {
   constructor(private readonly allergiesService: AllergiesService) {}
 
@@ -26,12 +26,12 @@ export class AllergiesController {
     return this.allergiesService.findAll();
   }
 
-  @Get(":id")
+  @Get(':id')
   findOne(@Param() params: ParamsDto) {
     return this.allergiesService.findOne(params.id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   update(
     @Param() params: ParamsDto,
     @Body() updateAllergyDto: UpdateAllergyDto,
@@ -39,7 +39,7 @@ export class AllergiesController {
     return this.allergiesService.update(params.id, updateAllergyDto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   remove(@Param() params: ParamsDto) {
     return this.allergiesService.remove(params.id);
   }

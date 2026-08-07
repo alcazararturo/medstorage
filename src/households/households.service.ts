@@ -1,11 +1,11 @@
-import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { eq } from "drizzle-orm";
-import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
-import type { DrizzleClient } from "../../server/db/database.module";
-import { households } from "../../server/db/schema";
-import type { InferInsertModel } from "drizzle-orm";
-import { CreateHouseholdDto } from "./dto/create-household.dto";
-import { UpdateHouseholdDto } from "./dto/update-household.dto";
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
+import type { DrizzleClient } from '../../server/db/database.module';
+import { households } from '../../server/db/schema';
+import type { InferInsertModel } from 'drizzle-orm';
+import { CreateHouseholdDto } from './dto/create-household.dto';
+import { UpdateHouseholdDto } from './dto/update-household.dto';
 
 type HouseholdsInsert = InferInsertModel<typeof households>;
 

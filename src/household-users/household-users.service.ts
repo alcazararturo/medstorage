@@ -1,11 +1,11 @@
-import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { eq } from "drizzle-orm";
-import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
-import type { DrizzleClient } from "../../server/db/database.module";
-import { householdUsers } from "../../server/db/schema";
-import type { InferInsertModel } from "drizzle-orm";
-import { CreateHouseholdUserDto } from "./dto/create-household-user.dto";
-import { UpdateHouseholdUserDto } from "./dto/update-household-user.dto";
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { and, eq } from 'drizzle-orm';
+import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
+import type { DrizzleClient } from '../../server/db/database.module';
+import { householdUsers } from '../../server/db/schema';
+import type { InferInsertModel } from 'drizzle-orm';
+import { CreateHouseholdUserDto } from './dto/create-household-user.dto';
+import { UpdateHouseholdUserDto } from './dto/update-household-user.dto';
 
 type HouseholdUsersInsert = InferInsertModel<typeof householdUsers>;
 
@@ -39,6 +39,24 @@ export class HouseholdUsersService {
       throw new NotFoundException(`No existe el householdUsers con id ${id}`);
     }
     return findOneHouseholdUsers;
+  }
+
+  async findMembership(userId: string, householdId: string) {
+    const [membership] = await this.db
+      .select({
+        id: householdUsers.id,
+        householdId: householdUsers.householdId,
+        userId: householdUsers.userId,
+        role: householdUsers.role,
+      })
+      .from(householdUsers)
+      .where(
+        and(
+          eq(householdUsers.userId, userId),
+          eq(householdUsers.householdId, householdId),
+        ),
+      );
+    return membership;
   }
 
   async update(id: string, updateHouseholdUserDto: UpdateHouseholdUserDto) {

@@ -1,11 +1,11 @@
-import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { eq } from "drizzle-orm";
-import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
-import type { DrizzleClient } from "../../server/db/database.module";
-import { allergies } from "../../server/db/schema";
-import type { InferInsertModel } from "drizzle-orm";
-import { CreateAllergyDto } from "./dto/create-allergy.dto";
-import { UpdateAllergyDto } from "./dto/update-allergy.dto";
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
+import type { DrizzleClient } from '../../server/db/database.module';
+import { allergies } from '../../server/db/schema';
+import type { InferInsertModel } from 'drizzle-orm';
+import { CreateAllergyDto } from './dto/create-allergy.dto';
+import { UpdateAllergyDto } from './dto/update-allergy.dto';
 
 type AllergyInsert = InferInsertModel<typeof allergies>;
 

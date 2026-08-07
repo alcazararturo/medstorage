@@ -1,11 +1,11 @@
-import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { eq } from "drizzle-orm";
-import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
-import type { DrizzleClient } from "../../server/db/database.module";
-import { notifications } from "../../server/db/schema";
-import type { InferInsertModel } from "drizzle-orm";
-import { CreateNotificationDto } from "./dto/create-notification.dto";
-import { UpdateNotificationDto } from "./dto/update-notification.dto";
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
+import type { DrizzleClient } from '../../server/db/database.module';
+import { notifications } from '../../server/db/schema';
+import type { InferInsertModel } from 'drizzle-orm';
+import { CreateNotificationDto } from './dto/create-notification.dto';
+import { UpdateNotificationDto } from './dto/update-notification.dto';
 
 type NotificationsInsert = InferInsertModel<typeof notifications>;
 

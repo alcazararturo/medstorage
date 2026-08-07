@@ -1,11 +1,11 @@
-import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { eq } from "drizzle-orm";
-import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
-import type { DrizzleClient } from "../../server/db/database.module";
-import { storageLocations } from "../../server/db/schema";
-import type { InferInsertModel } from "drizzle-orm";
-import { CreateStorageLocationDto } from "./dto/create-storage-location.dto";
-import { UpdateStorageLocationDto } from "./dto/update-storage-location.dto";
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
+import type { DrizzleClient } from '../../server/db/database.module';
+import { storageLocations } from '../../server/db/schema';
+import type { InferInsertModel } from 'drizzle-orm';
+import { CreateStorageLocationDto } from './dto/create-storage-location.dto';
+import { UpdateStorageLocationDto } from './dto/update-storage-location.dto';
 
 type StorageLocationsInsert = InferInsertModel<typeof storageLocations>;
 

@@ -6,13 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-} from "@nestjs/common";
-import { MedicationBatchesService } from "./medication-batches.service";
-import { CreateMedicationBatchDto } from "./dto/create-medication-batch.dto";
-import { UpdateMedicationBatchDto } from "./dto/update-medication-batch.dto";
-import { ParamsDto } from "../util/dto/paramsSchema";
+} from '@nestjs/common';
+import { MedicationBatchesService } from './medication-batches.service';
+import { CreateMedicationBatchDto } from './dto/create-medication-batch.dto';
+import { UpdateMedicationBatchDto } from './dto/update-medication-batch.dto';
+import { ParamsDto } from '../util/dto/paramsSchema';
 
-@Controller("medication-batches")
+@Controller('medication-batches')
 export class MedicationBatchesController {
   constructor(
     private readonly medicationBatchesService: MedicationBatchesService,
@@ -28,12 +28,12 @@ export class MedicationBatchesController {
     return this.medicationBatchesService.findAll();
   }
 
-  @Get(":id")
+  @Get(':id')
   findOne(@Param() params: ParamsDto) {
     return this.medicationBatchesService.findOne(params.id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   update(
     @Param() params: ParamsDto,
     @Body() updateMedicationBatchDto: UpdateMedicationBatchDto,
@@ -44,7 +44,7 @@ export class MedicationBatchesController {
     );
   }
 
-  @Delete(":id")
+  @Delete(':id')
   remove(@Param() params: ParamsDto) {
     return this.medicationBatchesService.remove(params.id);
   }

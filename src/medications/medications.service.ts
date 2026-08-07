@@ -1,11 +1,11 @@
-import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { eq } from "drizzle-orm";
-import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
-import type { DrizzleClient } from "../../server/db/database.module";
-import { medications } from "../../server/db/schema";
-import type { InferInsertModel } from "drizzle-orm";
-import { CreateMedicationDto } from "./dto/create-medication.dto";
-import { UpdateMedicationDto } from "./dto/update-medication.dto";
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
+import type { DrizzleClient } from '../../server/db/database.module';
+import { medications } from '../../server/db/schema';
+import type { InferInsertModel } from 'drizzle-orm';
+import { CreateMedicationDto } from './dto/create-medication.dto';
+import { UpdateMedicationDto } from './dto/update-medication.dto';
 
 type MedicationsInsert = InferInsertModel<typeof medications>;
 

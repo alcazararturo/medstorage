@@ -3,15 +3,15 @@ import {
   UnauthorizedException,
   ConflictException,
   Inject,
-} from "@nestjs/common";
-import { UsersService } from "../users/users.service";
-import { JwtService } from "@nestjs/jwt";
-import { LoginDto } from "../users/dto/login.dto";
-import { RegisterDto } from "./dto/register.dto";
-import { DRIZZLE_PROVIDER } from "../../server/db/database.module";
-import type { DrizzleClient } from "../../server/db/database.module";
-import { users, households, householdUsers } from "../../server/db/schema";
-import * as argon2 from "argon2";
+} from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
+import { LoginDto } from '../users/dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
+import type { DrizzleClient } from '../../server/db/database.module';
+import { users, households, householdUsers } from '../../server/db/schema';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +30,7 @@ export class AuthService {
     const existingUser = await this.usersService.findOneByEmail(email);
 
     if (existingUser) {
-      throw new ConflictException("El correo electrónico ya está registrado");
+      throw new ConflictException('El correo electrónico ya está registrado');
     }
 
     const passwordHash = await argon2.hash(registerDto.password, {
@@ -68,7 +68,7 @@ export class AuthService {
       await tx.insert(householdUsers).values({
         userId: newUser.id,
         householdId: newHousehold.id,
-        role: "owner",
+        role: 'owner',
       });
 
       return {
@@ -100,7 +100,7 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.usersService.findOneByEmail(loginDto.email);
     if (!user || !user.isActive) {
-      throw new UnauthorizedException("Credenciales incorrectas");
+      throw new UnauthorizedException('Credenciales incorrectas');
     }
 
     // Verificar contraseña usando Argon2
@@ -117,7 +117,7 @@ export class AuthService {
     }
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException("Credenciales incorrectas");
+      throw new UnauthorizedException('Credenciales incorrectas');
     }
 
     const payload = { sub: user.id, role: user.role };

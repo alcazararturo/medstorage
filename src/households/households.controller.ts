@@ -6,13 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-} from "@nestjs/common";
-import { HouseholdsService } from "./households.service";
-import { CreateHouseholdDto } from "./dto/create-household.dto";
-import { UpdateHouseholdDto } from "./dto/update-household.dto";
-import { ParamsDto } from "../util/dto/paramsSchema";
+} from '@nestjs/common';
+import { HouseholdsService } from './households.service';
+import { CreateHouseholdDto } from './dto/create-household.dto';
+import { UpdateHouseholdDto } from './dto/update-household.dto';
+import { ParamsDto } from '../util/dto/paramsSchema';
 
-@Controller("households")
+@Controller('households')
 export class HouseholdsController {
   constructor(private readonly householdsService: HouseholdsService) {}
 
@@ -26,12 +26,12 @@ export class HouseholdsController {
     return this.householdsService.findAll();
   }
 
-  @Get(":id")
+  @Get(':id')
   findOne(@Param() params: ParamsDto) {
     return this.householdsService.findOne(params.id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   update(
     @Param() params: ParamsDto,
     @Body() updateHouseholdDto: UpdateHouseholdDto,
@@ -39,7 +39,7 @@ export class HouseholdsController {
     return this.householdsService.update(params.id, updateHouseholdDto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   remove(@Param() params: ParamsDto) {
     return this.householdsService.remove(params.id);
   }

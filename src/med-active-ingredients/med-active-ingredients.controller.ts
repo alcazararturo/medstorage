@@ -6,13 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-} from "@nestjs/common";
-import { MedActiveIngredientsService } from "./med-active-ingredients.service";
-import { CreateMedActiveIngredientDto } from "./dto/create-med-active-ingredient.dto";
-import { UpdateMedActiveIngredientDto } from "./dto/update-med-active-ingredient.dto";
-import { ParamsDto } from "../util/dto/paramsSchema";
+} from '@nestjs/common';
+import { MedActiveIngredientsService } from './med-active-ingredients.service';
+import { CreateMedActiveIngredientDto } from './dto/create-med-active-ingredient.dto';
+import { UpdateMedActiveIngredientDto } from './dto/update-med-active-ingredient.dto';
+import { ParamsDto } from '../util/dto/paramsSchema';
 
-@Controller("med-active-ingredients")
+@Controller('med-active-ingredients')
 export class MedActiveIngredientsController {
   constructor(
     private readonly medActiveIngredientsService: MedActiveIngredientsService,
@@ -30,12 +30,12 @@ export class MedActiveIngredientsController {
     return this.medActiveIngredientsService.findAll();
   }
 
-  @Get(":id")
+  @Get(':id')
   findOne(@Param() params: ParamsDto) {
     return this.medActiveIngredientsService.findOne(params.id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   update(
     @Param() params: ParamsDto,
     @Body() updateMedActiveIngredientDto: UpdateMedActiveIngredientDto,
@@ -46,7 +46,7 @@ export class MedActiveIngredientsController {
     );
   }
 
-  @Delete(":id")
+  @Delete(':id')
   remove(@Param() params: ParamsDto) {
     return this.medActiveIngredientsService.remove(params.id);
   }

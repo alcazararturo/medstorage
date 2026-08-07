@@ -5,30 +5,30 @@ import {
   UseGuards,
   Get,
   Request,
-} from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { RegisterDto } from "../auth/dto/register.dto";
-import { LoginDto } from "../users/dto/login.dto";
-import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+} from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { RegisterDto } from '../auth/dto/register.dto';
+import { LoginDto } from '../users/dto/login.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
-@Controller("auth")
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post("register")
+  @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
-  @Post("login")
+  @Post('login')
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
   // Ejemplo de una ruta protegida con JWT
   @UseGuards(JwtAuthGuard)
-  @Get("profile")
+  @Get('profile')
   getProfile(@Request() req) {
-    return req.user; // Retorna el usuario inyectado por JwtStrategy
+    return req.user; 
   }
 }

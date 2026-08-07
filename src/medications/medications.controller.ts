@@ -6,13 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-} from "@nestjs/common";
-import { MedicationsService } from "./medications.service";
-import { CreateMedicationDto } from "./dto/create-medication.dto";
-import { UpdateMedicationDto } from "./dto/update-medication.dto";
-import { ParamsDto } from "../util/dto/paramsSchema";
+} from '@nestjs/common';
+import { MedicationsService } from './medications.service';
+import { CreateMedicationDto } from './dto/create-medication.dto';
+import { UpdateMedicationDto } from './dto/update-medication.dto';
+import { ParamsDto } from '../util/dto/paramsSchema';
 
-@Controller("medications")
+@Controller('medications')
 export class MedicationsController {
   constructor(private readonly medicationsService: MedicationsService) {}
 
@@ -26,12 +26,12 @@ export class MedicationsController {
     return this.medicationsService.findAll();
   }
 
-  @Get(":id")
+  @Get(':id')
   findOne(@Param() params: ParamsDto) {
     return this.medicationsService.findOne(params.id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   update(
     @Param() params: ParamsDto,
     @Body() updateMedicationDto: UpdateMedicationDto,
@@ -39,7 +39,7 @@ export class MedicationsController {
     return this.medicationsService.update(params.id, updateMedicationDto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   remove(@Param() params: ParamsDto) {
     return this.medicationsService.remove(params.id);
   }

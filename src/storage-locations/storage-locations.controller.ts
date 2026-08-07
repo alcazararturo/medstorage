@@ -6,13 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-} from "@nestjs/common";
-import { StorageLocationsService } from "./storage-locations.service";
-import { CreateStorageLocationDto } from "./dto/create-storage-location.dto";
-import { UpdateStorageLocationDto } from "./dto/update-storage-location.dto";
-import { ParamsDto } from "../util/dto/paramsSchema";
+} from '@nestjs/common';
+import { StorageLocationsService } from './storage-locations.service';
+import { CreateStorageLocationDto } from './dto/create-storage-location.dto';
+import { UpdateStorageLocationDto } from './dto/update-storage-location.dto';
+import { ParamsDto } from '../util/dto/paramsSchema';
 
-@Controller("storage-locations")
+@Controller('storage-locations')
 export class StorageLocationsController {
   constructor(
     private readonly storageLocationsService: StorageLocationsService,
@@ -28,12 +28,12 @@ export class StorageLocationsController {
     return this.storageLocationsService.findAll();
   }
 
-  @Get(":id")
+  @Get(':id')
   findOne(@Param() params: ParamsDto) {
     return this.storageLocationsService.findOne(params.id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   update(
     @Param() params: ParamsDto,
     @Body() updateStorageLocationDto: UpdateStorageLocationDto,
@@ -44,7 +44,7 @@ export class StorageLocationsController {
     );
   }
 
-  @Delete(":id")
+  @Delete(':id')
   remove(@Param() params: ParamsDto) {
     return this.storageLocationsService.remove(params.id);
   }
