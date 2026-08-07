@@ -6,13 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-} from "@nestjs/common";
-import { HouseholdUsersService } from "./household-users.service";
-import { CreateHouseholdUserDto } from "./dto/create-household-user.dto";
-import { UpdateHouseholdUserDto } from "./dto/update-household-user.dto";
-import { ParamsDto } from "../util/dto/paramsSchema";
+} from '@nestjs/common';
+import { HouseholdUsersService } from './household-users.service';
+import { CreateHouseholdUserDto } from './dto/create-household-user.dto';
+import { UpdateHouseholdUserDto } from './dto/update-household-user.dto';
+import { ParamsDto } from '../util/dto/paramsSchema';
 
-@Controller("household-users")
+@Controller('household-users')
 export class HouseholdUsersController {
   constructor(private readonly householdUsersService: HouseholdUsersService) {}
 
@@ -26,12 +26,12 @@ export class HouseholdUsersController {
     return this.householdUsersService.findAll();
   }
 
-  @Get(":id")
+  @Get(':id')
   findOne(@Param() params: ParamsDto) {
     return this.householdUsersService.findOne(params.id);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   update(
     @Param() params: ParamsDto,
     @Body() updateHouseholdUserDto: UpdateHouseholdUserDto,
@@ -39,7 +39,7 @@ export class HouseholdUsersController {
     return this.householdUsersService.update(params.id, updateHouseholdUserDto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   remove(@Param() params: ParamsDto) {
     return this.householdUsersService.remove(params.id);
   }
