@@ -59,6 +59,13 @@ export class HouseholdUsersService {
     return membership;
   }
 
+  async findByHousehold(householdId: string) {
+    return this.db
+      .select()
+      .from(householdUsers)
+      .where(eq(householdUsers.householdId, householdId));
+  }
+
   async update(id: string, updateHouseholdUserDto: UpdateHouseholdUserDto) {
     const [updatedHouseholdUsers] = await this.db
       .update(householdUsers)
