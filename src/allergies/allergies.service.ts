@@ -1,5 +1,5 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
 import type { DrizzleClient } from '../../server/db/database.module';
 import { allergies } from '../../server/db/schema';
@@ -16,52 +16,72 @@ export class AllergiesService {
     private readonly db: DrizzleClient,
   ) {}
 
-  async create(createAllergyDto: CreateAllergyDto) {
+  async create(familyMemberId: string, createAllergyDto: CreateAllergyDto) {
     const [newAllergy] = await this.db
       .insert(allergies)
-      .values(createAllergyDto as unknown as AllergyInsert)
+      .values({
+        ...(createAllergyDto as unknown as AllergyInsert),
+        familyMemberId,
+      })
       .returning();
     return newAllergy;
   }
 
-  async findAll() {
+  async findAllByFamilyMember(familyMemberId: string) {
     return this.db
       .select()
       .from(allergies)
-      .orderBy(allergies.familyMemberId, allergies.allergenName);
+      .where(eq(allergies.familyMemberId, familyMemberId))
+      .orderBy(allergies.allergenName);
   }
 
-  async findOne(id: string) {
-    const [findOneAllergy] = await this.db
+  async findOne(familyMemberId: string, id: string) {
+    const [allergy] = await this.db
       .select()
       .from(allergies)
-      .where(eq(allergies.id, id));
-    if (!findOneAllergy) {
-      throw new NotFoundException(`No existe el allergy con id ${id}`);
+      .where(
+        and(eq(allergies.id, id), eq(allergies.familyMemberId, familyMemberId)),
+      );
+    if (!allergy) {
+      throw new NotFoundException(
+        `No existe la alergia con id ${id} para el familiar ${familyMemberId}`,
+      );
     }
-    return findOneAllergy;
+    return allergy;
   }
 
-  async update(id: string, updateAllergyDto: UpdateAllergyDto) {
+  async update(
+    familyMemberId: string,
+    id: string,
+    updateAllergyDto: UpdateAllergyDto,
+  ) {
     const [updatedAllergy] = await this.db
       .update(allergies)
-      .set(updateAllergyDto as unknown as Partial<AllergyInsert>) // cast
-      .where(eq(allergies.id, id))
+      .set(updateAllergyDto as unknown as Partial<AllergyInsert>)
+      .where(
+        and(eq(allergies.id, id), eq(allergies.familyMemberId, familyMemberId)),
+      )
       .returning();
     if (!updatedAllergy) {
-      throw new NotFoundException(`No existe el allergies con id ${id}`);
+      throw new NotFoundException(
+        `No existe la alergia con id ${id} para el familiar ${familyMemberId}`,
+      );
     }
     return updatedAllergy;
   }
 
-  async remove(id: string) {
-    const [removeAllergy] = await this.db
+  async remove(familyMemberId: string, id: string) {
+    const [removedAllergy] = await this.db
       .delete(allergies)
-      .where(eq(allergies.id, id))
+      .where(
+        and(eq(allergies.id, id), eq(allergies.familyMemberId, familyMemberId)),
+      )
       .returning();
-    if (!removeAllergy) {
-      throw new NotFoundException(`No existe el allergy con id ${id}`);
+    if (!removedAllergy) {
+      throw new NotFoundException(
+        `No existe la alergia con id ${id} para el familiar ${familyMemberId}`,
+      );
     }
-    return removeAllergy;
+    return removedAllergy;
   }
 }

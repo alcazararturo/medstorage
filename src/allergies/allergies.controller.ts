@@ -6,41 +6,60 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { AllergiesService } from './allergies.service';
 import { CreateAllergyDto } from './dto/create-allergy.dto';
 import { UpdateAllergyDto } from './dto/update-allergy.dto';
-import { ParamsDto } from '../util/dto/paramsSchema';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { HouseholdMemberGuard } from '../auth/guards/household-member.guard';
+import { HouseholdRoles } from '../auth/decorators/household-roles.decorator';
 
-@Controller('allergies')
+@Controller('households/:householdId/family-members/:familyMemberId/allergies')
+@UseGuards(JwtAuthGuard, HouseholdMemberGuard)
 export class AllergiesController {
   constructor(private readonly allergiesService: AllergiesService) {}
 
   @Post()
-  create(@Body() createAllergyDto: CreateAllergyDto) {
-    return this.allergiesService.create(createAllergyDto);
+  @HouseholdRoles('owner')
+  create(
+    @Param('familyMemberId') familyMemberId: string,
+    @Body() createAllergyDto: CreateAllergyDto,
+  ) {
+    return this.allergiesService.create(familyMemberId, createAllergyDto);
   }
 
   @Get()
-  findAll() {
-    return this.allergiesService.findAll();
+  @HouseholdRoles('owner', 'member')
+  findAll(@Param('familyMemberId') familyMemberId: string) {
+    return this.allergiesService.findAllByFamilyMember(familyMemberId);
   }
 
   @Get(':id')
-  findOne(@Param() params: ParamsDto) {
-    return this.allergiesService.findOne(params.id);
+  @HouseholdRoles('owner', 'member')
+  findOne(
+    @Param('familyMemberId') familyMemberId: string,
+    @Param('id') id: string,
+  ) {
+    return this.allergiesService.findOne(familyMemberId, id);
   }
 
   @Patch(':id')
+  @HouseholdRoles('owner')
   update(
-    @Param() params: ParamsDto,
+    @Param('familyMemberId') familyMemberId: string,
+    @Param('id') id: string,
     @Body() updateAllergyDto: UpdateAllergyDto,
   ) {
-    return this.allergiesService.update(params.id, updateAllergyDto);
+    return this.allergiesService.update(familyMemberId, id, updateAllergyDto);
   }
 
   @Delete(':id')
-  remove(@Param() params: ParamsDto) {
-    return this.allergiesService.remove(params.id);
+  @HouseholdRoles('owner')
+  remove(
+    @Param('familyMemberId') familyMemberId: string,
+    @Param('id') id: string,
+  ) {
+    return this.allergiesService.remove(familyMemberId, id);
   }
 }
