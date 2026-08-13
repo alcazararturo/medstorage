@@ -12,7 +12,6 @@ import { HouseholdUsersService } from './household-users.service';
 import { CreateHouseholdUserDto } from './dto/create-household-user.dto';
 import { UpdateHouseholdUserDto } from './dto/update-household-user.dto';
 import { HouseholdParamsDto } from '../util/dto/householdParamsSchema';
-import { ParamsDto } from '../util/dto/paramsSchema';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HouseholdMemberGuard } from '../auth/guards/household-member.guard';
 import { HouseholdRoles } from '../auth/decorators/household-roles.decorator';
@@ -34,34 +33,30 @@ export class HouseholdUsersController {
   }
 
   @Get()
-  findAll() {
-    return this.householdUsersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param() params: ParamsDto) {
-    return this.householdUsersService.findOne(params.id);
-  }
-
-  @Get()
   @HouseholdRoles('owner', 'member')
-  findAllByHousehold(@Param() params: HouseholdParamsDto) {
+  findAllByHousehold(@Param('householdId') householdId: string) {
     // Aquí deberíamos filtrar por householdId,
     // necesitamos agregar este método al servicio después
-    return this.householdUsersService.findByHousehold(params.householdId);
+    return this.householdUsersService.findByHousehold(householdId);
   }
 
   @Patch(':id')
+  @HouseholdRoles('owner')
   update(
-    @Param() params: ParamsDto,
+    @Param('householdId') householdId: string,
+    @Param('id') id: string,
     @Body() updateHouseholdUserDto: UpdateHouseholdUserDto,
   ) {
-    return this.householdUsersService.update(params.id, updateHouseholdUserDto);
+    return this.householdUsersService.update(
+      householdId,
+      id,
+      updateHouseholdUserDto,
+    );
   }
 
   @Delete(':id')
   @HouseholdRoles('owner')
-  remove(@Param() params: ParamsDto) {
-    return this.householdUsersService.remove(params.id);
+  remove(@Param('householdId') householdId: string, @Param('id') id: string) {
+    return this.householdUsersService.remove(householdId, id);
   }
 }

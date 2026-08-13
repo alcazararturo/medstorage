@@ -66,26 +66,46 @@ export class HouseholdUsersService {
       .where(eq(householdUsers.householdId, householdId));
   }
 
-  async update(id: string, updateHouseholdUserDto: UpdateHouseholdUserDto) {
-    const [updatedHouseholdUsers] = await this.db
+  async update(
+    householdId: string,
+    id: string,
+    updateHouseholdUserDto: UpdateHouseholdUserDto,
+  ) {
+    const [updatedHouseholdUser] = await this.db
       .update(householdUsers)
       .set(updateHouseholdUserDto as unknown as Partial<HouseholdUsersInsert>) // cast
-      .where(eq(householdUsers.id, id))
+      .where(
+        and(
+          eq(householdUsers.id, id),
+          eq(householdUsers.householdId, householdId),
+        ),
+      )
       .returning();
-    if (!updatedHouseholdUsers) {
-      throw new NotFoundException(`No existe el householdUsers con id ${id}`);
+    if (!updatedHouseholdUser) {
+      throw new NotFoundException(
+        `No existe la relación ${id} dentro del hogar ${householdId}`,
+      );
     }
-    return updatedHouseholdUsers;
+    return updatedHouseholdUser;
   }
 
-  async remove(id: string) {
-    const [removeHouseholdUsers] = await this.db
+  async remove(householdId: string, id: string) {
+    const [removedHouseholdUser] = await this.db
       .delete(householdUsers)
-      .where(eq(householdUsers.id, id))
+      .where(
+        and(
+          eq(householdUsers.id, id),
+          eq(householdUsers.householdId, householdId),
+        ),
+      )
       .returning();
-    if (!removeHouseholdUsers) {
-      throw new NotFoundException(`No existe el householdUsers con id ${id}`);
+
+    if (!removedHouseholdUser) {
+      throw new NotFoundException(
+        `No existe la relación ${id} dentro del hogar ${householdId}`,
+      );
     }
-    return removeHouseholdUsers;
+
+    return removedHouseholdUser;
   }
 }
