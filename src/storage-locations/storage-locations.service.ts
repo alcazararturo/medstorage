@@ -1,5 +1,5 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
 import type { DrizzleClient } from '../../server/db/database.module';
 import { storageLocations } from '../../server/db/schema';
@@ -15,54 +15,86 @@ export class StorageLocationsService {
     @Inject(DRIZZLE_PROVIDER)
     private readonly db: DrizzleClient,
   ) {}
-  async create(createStorageLocationDto: CreateStorageLocationDto) {
-    const [newStorageLocations] = await this.db
+  async create(
+    householdId: string,
+    createStorageLocationDto: CreateStorageLocationDto,
+  ) {
+    const [newStorageLocation] = await this.db
       .insert(storageLocations)
-      .values(createStorageLocationDto as unknown as StorageLocationsInsert)
+      .values({
+        ...(createStorageLocationDto as unknown as StorageLocationsInsert),
+        householdId,
+      })
       .returning();
-    return newStorageLocations;
+    return newStorageLocation;
   }
 
-  async findAll() {
+  async findAllByHousehold(householdId: string) {
     return this.db
       .select()
       .from(storageLocations)
-      .orderBy(storageLocations.householdId, storageLocations.name);
+      .where(eq(storageLocations.householdId, householdId))
+      .orderBy(storageLocations.name);
   }
 
-  async findOne(id: string) {
-    const [findOneStorageLocations] = await this.db
+  async findOne(householdId: string, id: string) {
+    const [storageLocation] = await this.db
       .select()
       .from(storageLocations)
-      .where(eq(storageLocations.id, id));
-    if (!findOneStorageLocations) {
-      throw new NotFoundException(`No existe el storageLocations con id ${id}`);
+      .where(
+        and(
+          eq(storageLocations.id, id),
+          eq(storageLocations.householdId, householdId),
+        ),
+      );
+    if (!storageLocation) {
+      throw new NotFoundException(
+        `No existe el lugar de almacenamiento ${id} en el hogar ${householdId}`,
+      );
     }
-    return findOneStorageLocations;
+    return storageLocation;
   }
 
-  async update(id: string, updateStorageLocationDto: UpdateStorageLocationDto) {
-    const [updatedStorageLocations] = await this.db
+  async update(
+    householdId: string,
+    id: string,
+    updateStorageLocationDto: UpdateStorageLocationDto,
+  ) {
+    const [updatedStorageLocation] = await this.db
       .update(storageLocations)
       .set(
         updateStorageLocationDto as unknown as Partial<StorageLocationsInsert>,
       )
-      .where(eq(storageLocations.id, id))
+      .where(
+        and(
+          eq(storageLocations.id, id),
+          eq(storageLocations.householdId, householdId),
+        ),
+      )
       .returning();
-    if (!updatedStorageLocations) {
-      throw new NotFoundException(`No existe el storageLocations con id ${id}`);
+    if (!updatedStorageLocation) {
+      throw new NotFoundException(
+        `No existe el lugar de almacenamiento ${id} en el hogar ${householdId}`,
+      );
     }
-    return updatedStorageLocations;
+    return updatedStorageLocation;
   }
 
-  async remove(id: string) {
-    const [removeStorageLocations] = await this.db
+  async remove(householdId: string, id: string) {
+    const [removedStorageLocation] = await this.db
       .delete(storageLocations)
-      .where(eq(storageLocations.id, id))
+      .where(
+        and(
+          eq(storageLocations.id, id),
+          eq(storageLocations.householdId, householdId),
+        ),
+      )
       .returning();
-    if (!removeStorageLocations) {
-      throw new NotFoundException(`No existe el storageLocations con id ${id}`);
+    if (!removedStorageLocation) {
+      throw new NotFoundException(
+        `No existe el lugar de almacenamiento ${id} en el hogar ${householdId}`,
+      );
     }
-    return removeStorageLocations;
+    return removedStorageLocation;
   }
 }
