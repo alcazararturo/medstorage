@@ -10,7 +10,7 @@ import { HouseholdUsersModule } from './household-users/household-users.module';
 import { FamilyMembersModule } from './family-members/family-members.module';
 import { AllergiesModule } from './allergies/allergies.module';
 import { StorageLocationsModule } from './storage-locations/storage-locations.module';
-import { MedActiveIngredientsModule } from './med-active-ingredients/med-active-ingredients.module';
+import { MedicationActiveIngredientsModule } from './medication-active-ingredients/medication-active-ingredients.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -29,10 +29,11 @@ import { AuthModule } from './auth/auth.module';
     FamilyMembersModule,
     AllergiesModule,
     StorageLocationsModule,
-    MedActiveIngredientsModule,
+    MedicationActiveIngredientsModule,
     NotificationsModule,
     UsersModule,
     AuthModule,
+    MedicationActiveIngredientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

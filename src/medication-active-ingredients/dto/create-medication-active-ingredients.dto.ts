@@ -3,10 +3,10 @@ import { createZodDto } from 'nestjs-zod';
 // import { z } from 'zod';
 import { medicationActiveIngredients } from '../../../server/db/schema';
 
-export const MedActiveIngredientsSchema = createInsertSchema(
+export const MedicationActiveIngredientsSchema = createInsertSchema(
   medicationActiveIngredients,
 );
 
-export class CreateMedActiveIngredientDto extends createZodDto(
-  MedActiveIngredientsSchema,
+export class CreateMedicationActiveIngredientsDto extends createZodDto(
+  MedicationActiveIngredientsSchema,
 ) {}
