@@ -6,41 +6,54 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { MedicationsService } from './medications.service';
 import { CreateMedicationDto } from './dto/create-medication.dto';
 import { UpdateMedicationDto } from './dto/update-medication.dto';
-import { ParamsDto } from '../util/dto/paramsSchema';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { HouseholdMemberGuard } from '../auth/guards/household-member.guard';
+import { HouseholdRoles } from '../auth/decorators/household-roles.decorator';
 
-@Controller('medications')
+@Controller('households/:householdId/medications')
+@UseGuards(JwtAuthGuard, HouseholdMemberGuard)
 export class MedicationsController {
   constructor(private readonly medicationsService: MedicationsService) {}
 
   @Post()
-  create(@Body() createMedicationDto: CreateMedicationDto) {
-    return this.medicationsService.create(createMedicationDto);
+  @HouseholdRoles('owner')
+  create(
+    @Param('householdId') householdId: string,
+    @Body() createMedicationDto: CreateMedicationDto,
+  ) {
+    return this.medicationsService.create(householdId, createMedicationDto);
   }
 
   @Get()
-  findAll() {
-    return this.medicationsService.findAll();
+  @HouseholdRoles('owner', 'member')
+  findAll(@Param('householdId') householdId: string) {
+    return this.medicationsService.findAllByHousehold(householdId);
   }
 
   @Get(':id')
-  findOne(@Param() params: ParamsDto) {
-    return this.medicationsService.findOne(params.id);
+  @HouseholdRoles('owner', 'member')
+  findOne(@Param('householdId') householdId: string, @Param('id') id: string) {
+    return this.medicationsService.findOne(householdId, id);
   }
 
   @Patch(':id')
+  @HouseholdRoles('owner')
   update(
-    @Param() params: ParamsDto,
+    @Param('householdId') householdId: string,
+    @Param('id') id: string,
     @Body() updateMedicationDto: UpdateMedicationDto,
   ) {
-    return this.medicationsService.update(params.id, updateMedicationDto);
+    return this.medicationsService.update(householdId, id, updateMedicationDto);
   }
 
   @Delete(':id')
-  remove(@Param() params: ParamsDto) {
-    return this.medicationsService.remove(params.id);
+  @HouseholdRoles('owner')
+  remove(@Param('householdId') householdId: string, @Param('id') id: string) {
+    return this.medicationsService.remove(householdId, id);
   }
 }

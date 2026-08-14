@@ -1,5 +1,5 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
 import type { DrizzleClient } from '../../server/db/database.module';
 import { medications } from '../../server/db/schema';
@@ -15,52 +15,73 @@ export class MedicationsService {
     @Inject(DRIZZLE_PROVIDER)
     private readonly db: DrizzleClient,
   ) {}
-  async create(createMedicationDto: CreateMedicationDto) {
-    const [newMedications] = await this.db
+
+  async create(householdId: string, createMedicationDto: CreateMedicationDto) {
+    const [newMedication] = await this.db
       .insert(medications)
-      .values(createMedicationDto as unknown as MedicationsInsert)
+      .values({
+        ...(createMedicationDto as unknown as MedicationsInsert),
+        householdId,
+      })
       .returning();
-    return newMedications;
+    return newMedication;
   }
 
-  async findAll() {
+  async findAllByHousehold(householdId: string) {
     return this.db
       .select()
       .from(medications)
-      .orderBy(medications.householdId, medications.brandName);
+      .where(eq(medications.householdId, householdId))
+      .orderBy(medications.brandName);
   }
 
-  async findOne(id: string) {
-    const [findOneMedications] = await this.db
+  async findOne(householdId: string, id: string) {
+    const [medication] = await this.db
       .select()
       .from(medications)
-      .where(eq(medications.id, id));
-    if (!findOneMedications) {
-      throw new NotFoundException(`No existe el medicamento con id ${id}`);
+      .where(
+        and(eq(medications.id, id), eq(medications.householdId, householdId)),
+      );
+    if (!medication) {
+      throw new NotFoundException(
+        `No existe el medicamento ${id} en el hogar ${householdId}`,
+      );
     }
-    return findOneMedications;
+    return medication;
   }
 
-  async update(id: string, updateMedicationDto: UpdateMedicationDto) {
-    const [updatedMedications] = await this.db
+  async update(
+    householdId: string,
+    id: string,
+    updateMedicationDto: UpdateMedicationDto,
+  ) {
+    const [updatedMedication] = await this.db
       .update(medications)
       .set(updateMedicationDto as unknown as Partial<MedicationsInsert>)
-      .where(eq(medications.id, id))
+      .where(
+        and(eq(medications.id, id), eq(medications.householdId, householdId)),
+      )
       .returning();
-    if (!updatedMedications) {
-      throw new NotFoundException(`No existe el medicamento con id ${id}`);
+    if (!updatedMedication) {
+      throw new NotFoundException(
+        `No existe el medicamento ${id} en el hogar ${householdId}`,
+      );
     }
-    return updatedMedications;
+    return updatedMedication;
   }
 
-  async remove(id: string) {
-    const [removeMedications] = await this.db
+  async remove(householdId: string, id: string) {
+    const [removedMedication] = await this.db
       .delete(medications)
-      .where(eq(medications.id, id))
+      .where(
+        and(eq(medications.id, id), eq(medications.householdId, householdId)),
+      )
       .returning();
-    if (!removeMedications) {
-      throw new NotFoundException(`No existe el medicamento con id ${id}`);
+    if (!removedMedication) {
+      throw new NotFoundException(
+        `No existe el medicamento ${id} en el hogar ${householdId}`,
+      );
     }
-    return removeMedications;
+    return removedMedication;
   }
 }
