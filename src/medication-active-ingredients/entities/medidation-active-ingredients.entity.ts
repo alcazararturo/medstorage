@@ -1,1 +1,1 @@
-export class MedActiveIngredient {}
+export class MedicationActiveIngredients {}
