@@ -1,8 +1,12 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
 import type { DrizzleClient } from '../../server/db/database.module';
-import { medicationBatches } from '../../server/db/schema';
+import {
+  medicationBatches,
+  medications,
+  storageLocations,
+} from '../../server/db/schema';
 import type { InferInsertModel } from 'drizzle-orm';
 import { CreateMedicationBatchDto } from './dto/create-medication-batch.dto';
 import { UpdateMedicationBatchDto } from './dto/update-medication-batch.dto';
@@ -15,70 +19,156 @@ export class MedicationBatchesService {
     @Inject(DRIZZLE_PROVIDER)
     private readonly db: DrizzleClient,
   ) {}
-  async create(createMedicationBatchDto: CreateMedicationBatchDto) {
+
+  private async verifyMedicationBelongsToHousehold(
+    householdId: string,
+    medicationId: string,
+    storageLocationId: string,
+  ) {
+    const [medicationbatches] = await this.db
+      .select({ id: medicationBatches.id })
+      .from(medicationBatches)
+      .where(
+        and(
+          eq(medicationBatches.id, medicationId),
+          eq(medicationBatches.storageLocationId, storageLocationId),
+          eq(storageLocations.householdId, householdId),
+        ),
+      );
+
+    if (!medicationbatches) {
+      throw new NotFoundException(`No existe el medicamento ${medicationId}`);
+    }
+  }
+
+  async create(
+    householdId: string,
+    medicationId: string,
+    storageLocationId: string,
+    createMedicationBatchDto: CreateMedicationBatchDto,
+  ) {
+    await this.verifyMedicationBelongsToHousehold(
+      householdId,
+      medicationId,
+      storageLocationId,
+    );
+
     const [newBatch] = await this.db
       .insert(medicationBatches)
-      .values(
-        createMedicationBatchDto as unknown as MedicationBatchesInsert,
-        /* quantity:
-          createMedicationBatchDto.quantity !== undefined
-            ? createMedicationBatchDto.quantity.toString()
-            : undefined, */
-      )
+      .values({
+        ...(createMedicationBatchDto as unknown as MedicationBatchesInsert),
+        storageLocationId,
+        medicationId,
+      })
       .returning();
     return newBatch;
   }
 
-  async findAll() {
+  async findAllByBatches(
+    householdId: string,
+    storageLocationId: string,
+    medicationId: string,
+  ) {
+    await this.verifyMedicationBelongsToHousehold(
+      householdId,
+      storageLocationId,
+      medicationId,
+    );
     return this.db
       .select()
       .from(medicationBatches)
-      .orderBy(medicationBatches.expirationDate);
+      .where(eq(medicationBatches.id, medicationId))
+      .orderBy(medications.brandName);
   }
 
-  async findOne(id: string) {
-    const [findOneBatch] = await this.db
+  async findOne(
+    householdId: string,
+    storageLocationId: string,
+    medicationId: string,
+    id: string,
+  ) {
+    await this.verifyMedicationBelongsToHousehold(
+      householdId,
+      storageLocationId,
+      medicationId,
+    );
+    const [batches] = await this.db
       .select()
       .from(medicationBatches)
-      .where(eq(medicationBatches.id, id));
-    if (!findOneBatch) {
+      .where(
+        and(
+          eq(medicationBatches.id, id),
+          eq(medicationBatches.medicationId, medicationId),
+        ),
+      );
+    if (!batches) {
       throw new NotFoundException(
-        `No existe el lote de medicamento con id ${id}`,
+        `No existe el principio activo ${id} para el medicamento ${medicationId}`,
       );
     }
-    return findOneBatch;
+    return batches;
   }
 
-  async update(id: string, updateMedicationBatchDto: UpdateMedicationBatchDto) {
-    const [updatedBatch] = await this.db
+  async update(
+    householdId: string,
+    storageLocationId: string,
+    medicationId: string,
+    id: string,
+    updateDto: UpdateMedicationBatchDto,
+  ) {
+    await this.verifyMedicationBelongsToHousehold(
+      householdId,
+      storageLocationId,
+      medicationId,
+    );
+
+    const [updatedBatches] = await this.db
       .update(medicationBatches)
-      .set(
-        updateMedicationBatchDto as unknown as Partial<MedicationBatchesInsert>,
-        /* quantity:
-          updateMedicationBatchDto.quantity !== undefined
-            ? updateMedicationBatchDto.quantity.toString()
-            : undefined, */
-      ) // cast
-      .where(eq(medicationBatches.id, id))
+      .set(updateDto as unknown as Partial<MedicationBatchesInsert>)
+      .where(
+        and(
+          eq(medicationBatches.id, id),
+          eq(medicationBatches.storageLocationId, storageLocationId),
+          eq(medicationBatches.medicationId, medicationId),
+        ),
+      )
       .returning();
-    if (!updatedBatch) {
+
+    if (!updatedBatches) {
       throw new NotFoundException(
-        `No existe el lote de medicamento con id ${id}`,
+        `No existe el principio activo ${id} para el medicamento ${medicationId}`,
       );
     }
-    return updatedBatch;
+
+    return updatedBatches;
   }
 
-  async remove(id: string) {
-    const [removeBatch] = await this.db
+  async remove(
+    householdId: string,
+    storageLocationId: string,
+    medicationId: string,
+    id: string,
+  ) {
+    await this.verifyMedicationBelongsToHousehold(
+      householdId,
+      storageLocationId,
+      medicationId,
+    );
+    const [removedBatches] = await this.db
       .delete(medicationBatches)
-      .where(eq(medicationBatches.id, id))
+      .where(
+        and(
+          eq(medicationBatches.id, id),
+          eq(medicationBatches.storageLocationId, storageLocationId),
+          eq(medicationBatches.medicationId, medicationId),
+        ),
+      )
       .returning();
-    if (!removeBatch) {
+    if (!removedBatches) {
       throw new NotFoundException(
-        `No existe el lote de medicamento con id ${id}`,
+        `No existe el principio activo ${id} para el medicamento ${medicationId}`,
       );
     }
-    return removeBatch;
+    return removedBatches;
   }
 }
