@@ -33,7 +33,6 @@ import { AuthModule } from './auth/auth.module';
     NotificationsModule,
     UsersModule,
     AuthModule,
-    MedicationActiveIngredientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

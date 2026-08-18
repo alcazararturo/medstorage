@@ -27,13 +27,11 @@ export class MedicationBatchesController {
   create(
     @Param('householdId') householdId: string,
     @Param('medicationId') medicationId: string,
-    @Param('storageLocationId') storageLocationId: string,
     @Body() createDto: CreateMedicationBatchDto,
   ) {
     return this.medicationBatchesService.create(
       householdId,
       medicationId,
-      storageLocationId,
       createDto,
     );
   }
@@ -43,11 +41,9 @@ export class MedicationBatchesController {
   findAll(
     @Param('householdId') householdId: string,
     @Param('medicationId') medicationId: string,
-    @Param('storageLocationId') storageLocationId: string,
   ) {
     return this.medicationBatchesService.findAllByBatches(
       householdId,
-      storageLocationId,
       medicationId,
     );
   }
@@ -57,15 +53,9 @@ export class MedicationBatchesController {
   findOne(
     @Param('householdId') householdId: string,
     @Param('medicationId') medicationId: string,
-    @Param('storageLocationId') storageLocationId: string,
     @Param('id') id: string,
   ) {
-    return this.medicationBatchesService.findOne(
-      householdId,
-      medicationId,
-      storageLocationId,
-      id,
-    );
+    return this.medicationBatchesService.findOne(householdId, medicationId, id);
   }
 
   @Patch(':id')
@@ -73,14 +63,12 @@ export class MedicationBatchesController {
   update(
     @Param('householdId') householdId: string,
     @Param('medicationId') medicationId: string,
-    @Param('storageLocationId') storageLocationId: string,
     @Param('id') id: string,
     @Body() updateDto: UpdateMedicationBatchDto,
   ) {
     return this.medicationBatchesService.update(
       householdId,
       medicationId,
-      storageLocationId,
       id,
       updateDto,
     );
@@ -91,14 +79,8 @@ export class MedicationBatchesController {
   remove(
     @Param('householdId') householdId: string,
     @Param('medicationId') medicationId: string,
-    @Param('storageLocationId') storageLocationId: string,
     @Param('id') id: string,
   ) {
-    return this.medicationBatchesService.remove(
-      householdId,
-      medicationId,
-      storageLocationId,
-      id,
-    );
+    return this.medicationBatchesService.remove(householdId, medicationId, id);
   }
 }

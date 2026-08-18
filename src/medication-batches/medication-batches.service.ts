@@ -23,15 +23,17 @@ export class MedicationBatchesService {
   private async verifyMedicationBelongsToHousehold(
     householdId: string,
     medicationId: string,
-    storageLocationId: string,
   ) {
     const [medicationbatches] = await this.db
       .select({ id: medicationBatches.id })
       .from(medicationBatches)
+      /* .innerJoin(
+        storageLocations,
+        eq(storageLocations.id, medicationBatches.storageLocationId),
+      ) */
       .where(
         and(
-          eq(medicationBatches.id, medicationId),
-          eq(medicationBatches.storageLocationId, storageLocationId),
+          eq(medicationBatches.medicationId, medicationId),
           eq(storageLocations.householdId, householdId),
         ),
       );
@@ -44,54 +46,36 @@ export class MedicationBatchesService {
   async create(
     householdId: string,
     medicationId: string,
-    storageLocationId: string,
     createMedicationBatchDto: CreateMedicationBatchDto,
   ) {
-    await this.verifyMedicationBelongsToHousehold(
-      householdId,
-      medicationId,
-      storageLocationId,
-    );
+    await this.verifyMedicationBelongsToHousehold(householdId, medicationId);
 
     const [newBatch] = await this.db
       .insert(medicationBatches)
       .values({
         ...(createMedicationBatchDto as unknown as MedicationBatchesInsert),
-        storageLocationId,
         medicationId,
       })
       .returning();
     return newBatch;
   }
 
-  async findAllByBatches(
-    householdId: string,
-    storageLocationId: string,
-    medicationId: string,
-  ) {
-    await this.verifyMedicationBelongsToHousehold(
-      householdId,
-      storageLocationId,
-      medicationId,
-    );
+  async findAllByBatches(householdId: string, medicationId: string) {
+    await this.verifyMedicationBelongsToHousehold(householdId, medicationId);
     return this.db
       .select()
       .from(medicationBatches)
-      .where(eq(medicationBatches.id, medicationId))
+      .where(
+        and(
+          eq(medicationBatches.medicationId, medicationId),
+          eq(storageLocations.householdId, householdId),
+        ),
+      )
       .orderBy(medications.brandName);
   }
 
-  async findOne(
-    householdId: string,
-    storageLocationId: string,
-    medicationId: string,
-    id: string,
-  ) {
-    await this.verifyMedicationBelongsToHousehold(
-      householdId,
-      storageLocationId,
-      medicationId,
-    );
+  async findOne(householdId: string, medicationId: string, id: string) {
+    await this.verifyMedicationBelongsToHousehold(householdId, medicationId);
     const [batches] = await this.db
       .select()
       .from(medicationBatches)
@@ -99,6 +83,7 @@ export class MedicationBatchesService {
         and(
           eq(medicationBatches.id, id),
           eq(medicationBatches.medicationId, medicationId),
+          eq(storageLocations.householdId, householdId),
         ),
       );
     if (!batches) {
@@ -111,16 +96,11 @@ export class MedicationBatchesService {
 
   async update(
     householdId: string,
-    storageLocationId: string,
     medicationId: string,
     id: string,
     updateDto: UpdateMedicationBatchDto,
   ) {
-    await this.verifyMedicationBelongsToHousehold(
-      householdId,
-      storageLocationId,
-      medicationId,
-    );
+    await this.verifyMedicationBelongsToHousehold(householdId, medicationId);
 
     const [updatedBatches] = await this.db
       .update(medicationBatches)
@@ -128,8 +108,8 @@ export class MedicationBatchesService {
       .where(
         and(
           eq(medicationBatches.id, id),
-          eq(medicationBatches.storageLocationId, storageLocationId),
           eq(medicationBatches.medicationId, medicationId),
+          eq(storageLocations.householdId, householdId),
         ),
       )
       .returning();
@@ -143,24 +123,15 @@ export class MedicationBatchesService {
     return updatedBatches;
   }
 
-  async remove(
-    householdId: string,
-    storageLocationId: string,
-    medicationId: string,
-    id: string,
-  ) {
-    await this.verifyMedicationBelongsToHousehold(
-      householdId,
-      storageLocationId,
-      medicationId,
-    );
+  async remove(householdId: string, medicationId: string, id: string) {
+    await this.verifyMedicationBelongsToHousehold(householdId, medicationId);
     const [removedBatches] = await this.db
       .delete(medicationBatches)
       .where(
         and(
           eq(medicationBatches.id, id),
-          eq(medicationBatches.storageLocationId, storageLocationId),
           eq(medicationBatches.medicationId, medicationId),
+          eq(storageLocations.householdId, householdId),
         ),
       )
       .returning();

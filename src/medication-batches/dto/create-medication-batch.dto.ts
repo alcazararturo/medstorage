@@ -12,6 +12,7 @@ export const MedicationBatchSchema = MedicationBatchesBaseSchema.omit({
   medicationId: true,
   storageLocationId: true,
   createdAt: true,
+  updatedAt: true,
 }).extend({
   lotNumber: z.string().trim().max(100).optional().nullable(),
   expirationDate: z
