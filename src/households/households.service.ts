@@ -2,7 +2,7 @@ import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { DRIZZLE_PROVIDER } from '../../server/db/database.module';
 import type { DrizzleClient } from '../../server/db/database.module';
-import { households } from '../../server/db/schema';
+import { households, householdUsers } from '../../server/db/schema';
 import type { InferInsertModel } from 'drizzle-orm';
 import { CreateHouseholdDto } from './dto/create-household.dto';
 import { UpdateHouseholdDto } from './dto/update-household.dto';
@@ -15,12 +15,26 @@ export class HouseholdsService {
     @Inject(DRIZZLE_PROVIDER)
     private readonly db: DrizzleClient,
   ) {}
-  async create(createHouseholdDto: CreateHouseholdDto) {
-    const [newHouseholds] = await this.db
+  async create(createHouseholdDto: CreateHouseholdDto, userId: string) {
+    return this.db.transaction(async (tx) => {
+      const [newHousehold] = await tx
+        .insert(households)
+        .values(createHouseholdDto as unknown as HouseholdsInsert)
+        .returning();
+
+      await tx.insert(householdUsers).values({
+        householdId: newHousehold.id,
+        userId,
+        role: 'owner',
+      });
+
+      return newHousehold;
+    });
+    /* const [newHouseholds] = await this.db
       .insert(households)
       .values(createHouseholdDto as unknown as HouseholdsInsert)
       .returning();
-    return newHouseholds;
+    return newHouseholds; */
   }
 
   async findAll() {

@@ -27,7 +27,7 @@ export class HouseholdsController {
     @Body() createHouseholdDto: CreateHouseholdDto,
     @CurrentUser('id') userId: string,
   ) {
-    return this.householdsService.create(createHouseholdDto);
+    return this.householdsService.create(createHouseholdDto, userId);
   }
 
   @Get()
